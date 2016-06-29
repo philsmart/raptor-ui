@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<f:view contentType="text/html" id="fview">
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>RaptorUI</title>
+	<ui:debug />
+	<f:metadata>
+		<ui:insert name="metadata" />
+	</f:metadata>
+
+	<h:head>
+
+	</h:head>
+
+
+	<h:body>
+
+		<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+ 
+
+		<!-- <div id="left"
+			style="float: left; background-color: black; width: 62px; height: 100%; position: fixed; margin-left: -8px; margin-top: -8px">
+
+			
+
+		</div> -->
+
+		<div id="header" style="text-align: center; padding-bottom: 50px">
+			<ui:insert name="header">
+			<h:outputText value="version 0.0.1" style="float:left;color:gray"/>
+				<b>RaptorUI@ </b>
+				<h:graphicImage rendered="#{systemSelection.isShibboleth()}"
+					style="height:50px; vertical-align:middle"
+					value="resources/images/shibboleth.png" />
+				<h:graphicImage rendered="#{systemSelection.isEzproxy()}"
+					style="height:40px; vertical-align:middle"
+					value="resources/images/ezproxy.png" />
+					
+					
+					<h:form style="float:right">
+				<p:megaMenu orientation="horizontal">
+					<p:submenu icon="fa fa-cog">
+						<p:column>
+
+							<p:graphicImage rendered="#{systemSelection.isShibboleth()}"
+								style="height:50px; vertical-align:middle"
+								value="resources/images/shibboleth.png" />
+							<p:graphicImage rendered="#{systemSelection.isEzproxy()}"
+								style="height:40px; vertical-align:middle"
+								value="resources/images/ezproxy.png" />
+							<p:submenu label="Select System">
+								<p:menuitem value="Shibboleth"
+									action="#{systemSelection.toggleShibboleth()}" ajax="false">
+
+								</p:menuitem>
+
+								<p:menuitem value="Ezproxy"
+									action="#{systemSelection.toggleEzproxy()}" ajax="false" />
+							</p:submenu>
+						</p:column>
+					</p:submenu>
+					
+					<p:menuitem icon="fa fa-search" action="index.jsf" ajax="false"/>
+					<p:menuitem icon="fa fa-tachometer" action="dashboard.jsf" ajax="false"/>
+					
+					
+					
+					<p:menuitem icon="fa fa-sign-out" style="margin-left:20px" />
+				</p:megaMenu>
+			</h:form>
+			</ui:insert>
+		</div>
+
+
+
+		<div id="content">
+			<ui:insert name="content">
+
+			</ui:insert>
+		</div>
+
+		<div id="footer" style="margin-left:65px; margin-right:65px">
+			<p:messages id="messages" showDetail="true" autoUpdate="true"	
+				closable="true" />
+		</div>
+
+
+
+		<p:dialog modal="true" widgetVar="statusDialog" showHeader="false" 
+			draggable="false" closable="false" resizable="false" visible="false"
+			position="center" maximizable="false" minimizable="false">
+			<p:graphicImage value="resources/images/ajax-loader.gif" />
+		</p:dialog>
+	</h:body>
+
+
+</f:view>
+</html>

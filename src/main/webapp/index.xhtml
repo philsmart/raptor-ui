@@ -1,0 +1,110 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="templates/template.xhtml">
+	<ui:define name="content">
+		<style type="text/css">
+.big-icon {
+	padding: 20px 20px 20px 20px
+}
+</style>
+		<h:form id="searchForm">
+			<div style="display: block; text-align: center">
+				<span class="big-icon"> <p:commandLink
+						action="#{search.toggleUser()}" ajax="false"
+						style="text-decoration: none;">
+						<p:panelGrid columns="1" style="display:inline"
+							styleClass="ui-noborder">
+							<i class="fa fa-users fa-4x"  
+							style="#{search.isUser() eq true ? 'color:black':'color:lightgray'}" aria-hidden="true" />
+
+							<h:outputText value="User" />
+
+						</p:panelGrid>
+					</p:commandLink>
+				</span> <span class="big-icon"> <h:commandLink
+						action="#{search.toggleServiceProvider()}"
+						style="text-decoration: none;">
+						<p:panelGrid columns="1" style="display:inline"
+							styleClass="ui-noborder">
+							<i class="fa fa-book fa-4x" aria-hidden="true" 
+							 style="#{search.isServiceProvider() eq true ? 'color:black':'color:lightgray'}" />
+
+							<h:outputText value="Service Provider" />
+
+						</p:panelGrid>
+					</h:commandLink>
+				</span> <span class="big-icon"> <h:commandLink
+						action="#{search.toggleSchool()}"
+						style="text-decoration: none;">
+						<p:panelGrid columns="1" style="display:inline"
+							styleClass="ui-noborder">
+							<i class="fa fa-graduation-cap fa-4x" aria-hidden="true" 
+							 style="#{search.isSchool() eq true ? 'color:black':'color:lightgray'}" />
+
+							<h:outputText value="School/Dept" />
+
+						</p:panelGrid>
+					</h:commandLink>
+				</span>
+
+				<div style="padding-top: 20px">
+				
+					
+				
+
+					
+				<!-- 	<p:megaMenu orientation="horizontal" style="">
+					<p:submenu icon="fa fa-cog">
+						<p:column>							
+							<p:submenu label="Grouping">
+								<p:menuitem value="Service Provider"
+									 ajax="false">
+								</p:menuitem>
+								<p:menuitem value="School"
+									 ajax="false" />
+							</p:submenu>
+							<p:submenu label="Over Time">
+								<p:menuitem value="Monthly"
+									 ajax="false"/>
+							</p:submenu>
+						</p:column>
+					</p:submenu>
+					
+					
+				</p:megaMenu> -->
+					
+					
+					<p:inputText id="searchInput" value="#{search.term}" 
+						style="#{search.searchInputWidth}}text-align:center;-webkit-border-radius: 10px; -moz-border-radius: 10px;border-radius: 10px;margin:20px 0px 20px 0px"></p:inputText>
+					<p:commandButton value="Search" icon="fa fa-search" action="#{searchService.search(systemSelection,search,searchGraph)}" ajax="false" />
+				</div>
+				<h:panelGrid columns="4" style="text-align:center; display:inline"
+					cellpadding="5">
+					<p:outputLabel for="fromDate" value="From:" />
+					<p:calendar id="fromDate" label="From" showOn="button"
+						effect="drop" value="#{search.from}" pattern="EEE, dd MMM, yyyy"
+						pages="1" navigator="true" />
+					<p:outputLabel for="toDate" value="To:" />
+					<p:calendar id="toDate" label="To" showOn="button"
+						value="#{search.to}" pattern="EEE, dd MMM, yyyy" effect="drop"
+						pages="1" navigator="true" />
+				</h:panelGrid>
+	
+
+
+			</div>
+			
+			<p:panel id="searchChart"  rendered="#{not empty searchGraph.chart}" 
+				style="margin-bottom:20px;margin-top:50px">
+				<p:chart type="bar" model="#{searchGraph.chart}" style="#{searchGraph.chartHeight}"/>
+			</p:panel>
+			
+			
+			
+		</h:form>
+	</ui:define>
+</ui:composition>
