@@ -1,0 +1,57 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="templates/template.xhtml">
+	<ui:define name="content">
+		<style type="text/css">
+.big-icon {
+	padding: 20px 20px 20px 20px
+}
+</style>
+		<!-- <h:form>
+
+			<p:poll interval="3" update="graphs" />
+		</h:form> -->
+		
+		<p:panelGrid columns="2">
+
+		
+
+			<p:panel 
+				 header="Top 10 Service Provider Authentications">
+
+
+				<p:chart type="pie" model="#{dashboardGraphs.getShibChartsGetter('TOP5')}"
+					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5')}"
+					style="width:550px;height:800px;margin-left:auto;margin-right:auto" />
+
+				
+			</p:panel>
+
+			<p:panel
+				header="Top 10 Service Provider Authentications (Distinct User)">
+				
+				
+				<p:chart type="pie" model="#{dashboardGraphs.getShibChartsGetter('TOP5DISTINCT')}" 
+					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5DISTINCT')}"
+					style="width:550px;height:800px;margin-left:auto;margin-right:auto" />
+
+			</p:panel>
+
+			
+		
+		
+		</p:panelGrid>
+		<p:panel header="Authentications This Year">
+		
+		<p:chart type="line" model="#{dashboardGraphs.getShibChartsGetter('AUTHSPERMONTH_YEAR')}"  responsive="true"
+					rendered="#{not empty dashboardGraphs.getShibChartsGetter('AUTHSPERMONTH_YEAR')}"
+					style="width:100%;height:500px;margin-left:auto;margin-right:auto" />
+
+	</p:panel>
+
+	</ui:define>
+</ui:composition>

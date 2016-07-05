@@ -1,8 +1,5 @@
 package uk.ac.cardiff.raptor.ui.model;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 import javax.faces.bean.ManagedBean;
@@ -10,6 +7,8 @@ import javax.faces.bean.ViewScoped;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.cardiff.raptor.ui.utils.DateUtils;
 
 @ManagedBean
 @ViewScoped
@@ -39,12 +38,9 @@ public class Search {
 	}
 
 	public Search() {
-		final LocalDateTime currentTime = LocalDateTime.now();
-		final LocalDateTime startOfYear = currentTime.withDayOfMonth(1).withMonth(1).withHour(0).withMinute(0);
-		final ZonedDateTime zdt = startOfYear.atZone(ZoneId.systemDefault());
 
 		to = new Date();
-		from = Date.from(zdt.toInstant());
+		from = DateUtils.getStartOfYear();
 		user = true;
 	}
 

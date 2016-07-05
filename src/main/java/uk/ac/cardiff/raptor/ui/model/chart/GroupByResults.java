@@ -25,6 +25,7 @@ public class GroupByResults {
 	/**
 	 * @return the results
 	 */
+	// @Nonnull
 	public List<GroupByResult> getResults() {
 		if (results == null) {
 			results = new ArrayList<GroupByResult>();

@@ -11,12 +11,14 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import uk.ac.cardiff.raptor.ui.web.ConfigureJSFContextParameters;
 
 @Configuration
 @ComponentScan(basePackages = { "uk.ac.cardiff" })
 @EnableAutoConfiguration
+@EnableScheduling
 public class RaptorUiApplication extends SpringBootServletInitializer {
 
 	public static void main(final String[] args) {
@@ -31,7 +33,7 @@ public class RaptorUiApplication extends SpringBootServletInitializer {
 	@Bean
 	public ServletRegistrationBean servletRegistrationBean() {
 		final FacesServlet servlet = new FacesServlet();
-		final ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(servlet, "*.jsf");
+		final ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(servlet, "*.html");
 		return servletRegistrationBean;
 	}
 

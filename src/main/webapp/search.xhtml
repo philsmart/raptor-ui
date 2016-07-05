@@ -10,6 +10,8 @@
 .big-icon {
 	padding: 20px 20px 20px 20px
 }
+
+
 </style>
 		<h:form id="searchForm">
 			<div style="display: block; text-align: center">
@@ -79,8 +81,9 @@
 					
 					
 					<p:inputText id="searchInput" value="#{search.term}" 
-						style="#{search.searchInputWidth}}text-align:center;-webkit-border-radius: 10px; -moz-border-radius: 10px;border-radius: 10px;margin:20px 0px 20px 0px"></p:inputText>
-					<p:commandButton value="Search" icon="fa fa-search" action="#{searchService.search(systemSelection,search,searchGraph)}" ajax="false" />
+						style="#{search.searchInputWidth}};text-align:center;-webkit-border-radius: 10px; -moz-border-radius: 10px;border-radius: 10px;margin:20px 0px 20px 0px">
+						</p:inputText>
+					<p:commandButton value="Search" icon="fa fa-search" action="#{searchService.search(systemSelection,search,searchGraph)}" ajax="false" update="searchChart"/>
 				</div>
 				<h:panelGrid columns="4" style="text-align:center; display:inline"
 					cellpadding="5">
@@ -99,12 +102,27 @@
 			</div>
 			
 			<p:panel id="searchChart"  rendered="#{not empty searchGraph.chart}" 
-				style="margin-bottom:20px;margin-top:50px">
+				style="margin-bottom:20px;margin-top:50px" toggleable="true" header="Results Graph">
 				<p:chart type="bar" model="#{searchGraph.chart}" style="#{searchGraph.chartHeight}"/>
+				
+				
 			</p:panel>
 			
-			
-			
-		</h:form>
+			<p:panel id="searchTable" rendered="#{not empty searchGraph.table}" toggleable="true" header="Results Table">
+				<p:dataTable var="row" value="#{searchGraph.table.rows}">
+					<p:column headerText="Label">
+						<h:outputText value="#{row.label}" />
+					</p:column>
+
+					<p:column headerText="Value">
+						<h:outputText value="#{row.value}" />
+					</p:column>
+
+					
+
+				</p:dataTable>
+				
+				</p:panel>
+				</h:form>
 	</ui:define>
 </ui:composition>

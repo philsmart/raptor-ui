@@ -12,10 +12,6 @@
         <phase-listener>org.springframework.web.jsf.DelegatingPhaseListenerMulticaster</phase-listener>
     </lifecycle>
     
-  <!--   <managed-bean>
-        <managed-bean-name>category</managed-bean-name>
-        <managed-bean-class>uk.ac.cardiff.raptor.ui.model.CategorySelection</managed-bean-class>
-        <managed-bean-scope>view</managed-bean-scope>
-    </managed-bean> -->
+
 
 </faces-config>

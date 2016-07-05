@@ -5,6 +5,7 @@ import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.ChartSeries;
 import org.primefaces.model.chart.HorizontalBarChartModel;
 import org.primefaces.model.chart.LineChartModel;
+import org.primefaces.model.chart.PieChartModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -21,8 +22,29 @@ public class ChartService {
 
 		final LineChartModel model = new LineChartModel();
 
+		final ChartSeries series = new ChartSeries();
+
+		for (final GroupByResult result : results.getResults()) {
+			series.set(result.getFieldName(), result.getCount());
+		}
+
+		// model.getAxes().put(AxisType.X, new CategoryAxis("Weeks"));
+		// model.getAxes().put(AxisType.Y, new CategoryAxis("Authentications"));
+
+		model.addSeries(series);
 		return model;
 
+	}
+
+	public PieChartModel createPieModel(final GroupByResults results) {
+		final PieChartModel model = new PieChartModel();
+		for (final GroupByResult row : results.getResults()) {
+			model.set(row.getFieldName(), row.getCount());
+		}
+		model.setShowDataLabels(true);
+		model.setDiameter(300);
+		model.setLegendPosition("s");
+		return model;
 	}
 
 	public HorizontalBarChartModel createHorizontalBarModel(final GroupByResults results) {

@@ -6,7 +6,12 @@
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:f="http://java.sun.com/jsf/core">
 
+
+
 <f:view contentType="text/html" id="fview">
+
+
+
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>RaptorUI</title>
@@ -17,36 +22,33 @@
 
 	<h:head>
 
+		<style>
+.ui-megamenu {
+	background: black;
+}
+
+.icon-white {
+	color: white
+}
+</style>
+
 	</h:head>
 
 
 	<h:body>
 
-		<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
- 
+		<p:ajaxStatus onstart="PF('statusDialog').show()"
+			onsuccess="PF('statusDialog').hide()" />
 
-		<!-- <div id="left"
+
+		<div id="left"
 			style="float: left; background-color: black; width: 62px; height: 100%; position: fixed; margin-left: -8px; margin-top: -8px">
-
-			
-
-		</div> -->
-
-		<div id="header" style="text-align: center; padding-bottom: 50px">
-			<ui:insert name="header">
-			<h:outputText value="version 0.0.1" style="float:left;color:gray"/>
-				<b>RaptorUI@ </b>
-				<h:graphicImage rendered="#{systemSelection.isShibboleth()}"
-					style="height:50px; vertical-align:middle"
-					value="resources/images/shibboleth.png" />
-				<h:graphicImage rendered="#{systemSelection.isEzproxy()}"
-					style="height:40px; vertical-align:middle"
-					value="resources/images/ezproxy.png" />
-					
-					
-					<h:form style="float:right">
-				<p:megaMenu orientation="horizontal">
-					<p:submenu icon="fa fa-cog">
+			<h:outputText value="v0.0.1"
+				style="margin-left:5px;margin-top:5px;color:gray" />
+			<h:form>
+				<p:megaMenu orientation="vertical"
+					style="width:40px;-webkit-border-radius: 0px; border-radius: 0px;margin-top:10px; margin-left:5px;border:0px">
+					<p:submenu icon="fa fa-cog icon-white">
 						<p:column>
 
 							<p:graphicImage rendered="#{systemSelection.isShibboleth()}"
@@ -66,34 +68,69 @@
 							</p:submenu>
 						</p:column>
 					</p:submenu>
-					
-					<p:menuitem icon="fa fa-search" action="index.jsf" ajax="false"/>
-					<p:menuitem icon="fa fa-tachometer" action="dashboard.jsf" ajax="false"/>
-					
-					
-					
-					<p:menuitem icon="fa fa-sign-out" style="margin-left:20px" />
+
+					<p:menuitem icon="fa fa-search icon-white" action="search.html"
+						ajax="false" />
+
+
+					<p:submenu icon="fa fa-tachometer icon-white">
+						<p:column>
+
+
+							<p:submenu label="Select Dashboard Period">
+								<p:menuitem value="Year" action="dashboard-year.xhtml"
+									ajax="false">
+
+								</p:menuitem>
+
+								
+							</p:submenu>
+						</p:column>
+					</p:submenu>
+
+
+
+					<p:menuitem icon="fa fa-sign-out icon-white"
+						style="margin-top:20px" />
 				</p:megaMenu>
 			</h:form>
+
+
+
+		</div>
+
+		<div id="header" style="text-align: center; padding-bottom: 50px">
+			<ui:insert name="header">
+
+				<b>RaptorUI@ </b>
+				<h:graphicImage rendered="#{systemSelection.isShibboleth()}"
+					style="height:50px; vertical-align:middle"
+					value="resources/images/shibboleth.png" alt="shibboleth" />
+				<h:graphicImage rendered="#{systemSelection.isEzproxy()}"
+					style="height:40px; vertical-align:middle"
+					value="resources/images/ezproxy.png" alt="ezproxy" />
+
+
+
 			</ui:insert>
 		</div>
 
 
 
-		<div id="content">
+		<div id="content" style="margin-left: 65px;">
 			<ui:insert name="content">
 
 			</ui:insert>
 		</div>
 
-		<div id="footer" style="margin-left:65px; margin-right:65px">
-			<p:messages id="messages" showDetail="true" autoUpdate="true"	
+		<div id="footer" style="margin-left: 65px; margin-right: 65px">
+			<p:messages id="messages" showDetail="true" autoUpdate="true"
 				closable="true" />
 		</div>
 
 
 
-		<p:dialog modal="true" widgetVar="statusDialog" showHeader="false" 
+		<p:dialog modal="true" widgetVar="statusDialog" showHeader="false"
 			draggable="false" closable="false" resizable="false" visible="false"
 			position="center" maximizable="false" minimizable="false">
 			<p:graphicImage value="resources/images/ajax-loader.gif" />

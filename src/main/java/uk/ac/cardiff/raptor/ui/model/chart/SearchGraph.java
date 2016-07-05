@@ -15,6 +15,8 @@ public class SearchGraph {
 	 */
 	private ChartModel chart;
 
+	private TableModel table;
+
 	public String getChartHeight() {
 		if (chart instanceof HorizontalBarChartModel) {
 			final HorizontalBarChartModel model = (HorizontalBarChartModel) chart;
@@ -43,6 +45,21 @@ public class SearchGraph {
 	 */
 	public void setChart(final ChartModel chart) {
 		this.chart = chart;
+	}
+
+	/**
+	 * @return the table
+	 */
+	public TableModel getTable() {
+		return table;
+	}
+
+	/**
+	 * @param table
+	 *            the table to set
+	 */
+	public void setTable(final TableModel table) {
+		this.table = table;
 	}
 
 }

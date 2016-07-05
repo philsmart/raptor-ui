@@ -34,6 +34,9 @@ public class SearchService {
 	private ChartService chartService;
 
 	@Inject
+	private TableService tableService;
+
+	@Inject
 	private SearchToSqlMapper sqlMapper;
 
 	@PostConstruct
@@ -53,6 +56,7 @@ public class SearchService {
 		final GroupByResults results = selectRunSearch(search, tableName);
 
 		graph.setChart(chartService.createHorizontalBarModel(results));
+		graph.setTable(tableService.createGroupByTable(results));
 	}
 
 	private GroupByResults selectRunSearch(final Search search, final String tableName) {
