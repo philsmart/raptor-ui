@@ -14,4 +14,11 @@ public class DateUtils {
 		return Date.from(zdt.toInstant());
 	}
 
+	public static Date getStartOfToday() {
+		final LocalDateTime currentTime = LocalDateTime.now();
+		final LocalDateTime startOfYear = currentTime.withHour(0).withMinute(0);
+		final ZonedDateTime zdt = startOfYear.atZone(ZoneId.systemDefault());
+		return Date.from(zdt.toInstant());
+	}
+
 }

@@ -16,27 +16,27 @@
 			<p:poll interval="3" update="graphs" />
 		</h:form> -->
 		
-		<p:panelGrid columns="2">
+		<p:panelGrid columns="2" style="width:100%">
 
 		
 
 			<p:panel 
-				 header="Top 10 Service Provider Authentications">
+				 header="Top 10 Service Provider Authentications" style="display:block;text-align:center;margin-left:auto;margin-right:auto">
 
 
-				<p:chart type="pie" model="#{dashboardGraphs.getShibChartsGetter('TOP5')}"
-					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5')}"
+				<p:chart type="pie" model="#{dashboardGraphs.getShibChartsGetter('TOP5_YEAR')}" responsive="true"
+					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5_YEAR')}"
 					style="width:550px;height:800px;margin-left:auto;margin-right:auto" />
 
 				
 			</p:panel>
 
-			<p:panel
+			<p:panel style="display:block;text-align:center;margin-left:auto;margin-right:auto;height:850px"
 				header="Top 10 Service Provider Authentications (Distinct User)">
 				
 				
-				<p:chart type="pie" model="#{dashboardGraphs.getShibChartsGetter('TOP5DISTINCT')}" 
-					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5DISTINCT')}"
+				<p:chart type="pie" model="#{dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_YEAR')}" 
+					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_YEAR')}"
 					style="width:550px;height:800px;margin-left:auto;margin-right:auto" />
 
 			</p:panel>
@@ -47,7 +47,7 @@
 		</p:panelGrid>
 		<p:panel header="Authentications This Year">
 		
-		<p:chart type="line" model="#{dashboardGraphs.getShibChartsGetter('AUTHSPERMONTH_YEAR')}"  responsive="true"
+		<p:chart type="line" model="#{dashboardGraphs.getShibChartsGetter('AUTHSPERMONTH_YEAR')}"  responsive="true" widgetVar="chart"
 					rendered="#{not empty dashboardGraphs.getShibChartsGetter('AUTHSPERMONTH_YEAR')}"
 					style="width:100%;height:500px;margin-left:auto;margin-right:auto" />
 

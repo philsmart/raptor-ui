@@ -14,11 +14,17 @@ public class DashboardGraphs {
 	private static final Logger log = LoggerFactory.getLogger(DashboardGraphs.class);
 
 	public enum CHART_TYPE {
-		TOP5,
+		TOP5_YEAR,
 
-		TOP5DISTINCT,
+		TOP5DISTINCT_YEAR,
 
-		AUTHSPERMONTH_YEAR
+		AUTHSPERMONTH_YEAR,
+
+		TOP5_TODAY,
+
+		TOP5DISTINCT_TODAY,
+
+		AUTHSPERMONTH_TODAY
 	}
 
 	private Map<CHART_TYPE, ChartModel> shibCharts = new HashMap<CHART_TYPE, ChartModel>();

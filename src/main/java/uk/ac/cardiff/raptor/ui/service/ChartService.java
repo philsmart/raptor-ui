@@ -3,8 +3,10 @@ package uk.ac.cardiff.raptor.ui.service;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.ChartSeries;
+import org.primefaces.model.chart.DateAxis;
 import org.primefaces.model.chart.HorizontalBarChartModel;
 import org.primefaces.model.chart.LineChartModel;
+import org.primefaces.model.chart.LinearAxis;
 import org.primefaces.model.chart.PieChartModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +30,8 @@ public class ChartService {
 			series.set(result.getFieldName(), result.getCount());
 		}
 
-		// model.getAxes().put(AxisType.X, new CategoryAxis("Weeks"));
-		// model.getAxes().put(AxisType.Y, new CategoryAxis("Authentications"));
+		model.getAxes().put(AxisType.X, new DateAxis("Weeks"));
+		model.getAxes().put(AxisType.Y, new LinearAxis("Authentications"));
 
 		model.addSeries(series);
 		return model;

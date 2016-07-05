@@ -39,7 +39,7 @@ public class DashboardService {
 	@Inject
 	private DashboardGraphs dashboardGraphs;
 
-	@Scheduled(fixedDelay = 50000)
+	@Scheduled(fixedDelay = 500000)
 	public void createTopGraphs() throws DashboardException {
 
 		log.info("Running CREATE TOP graphs");
@@ -51,16 +51,23 @@ public class DashboardService {
 				.orElseThrow(() -> new DashboardException("No system set, one of Shibboleth or Ezproxy expected"));
 		log.debug("Searching using TableName [{}]", tableName);
 
-		final GroupByResults topAuthsShib = authRepository
+		final GroupByResults topAuthsShibYear = authRepository
 				.findTopServiceProvidersByAuthentications(DateUtils.getStartOfYear(), tableName);
+
+		final GroupByResults topAuthsShibToday = authRepository
+				.findTopServiceProvidersByAuthentications(DateUtils.getStartOfToday(), tableName);
+
 		// final GroupByResults topAuthsShibDistinct = authRepository
 		// .findTopServiceProvidersByAuthenticationsDistinctUsers(tableName);
 
 		final GroupByResults authsPerMonthYear = authRepository
 				.findAuthsToAllServiceProvidersByPeriod(DateUtils.getStartOfYear(), tableName, "week");
 
-		dashboardTables.getShibTables().put(TABLE_TYPE.TOP5, tableService.createGroupByTable(topAuthsShib));
-		dashboardGraphs.getShibCharts().put(CHART_TYPE.TOP5, chartService.createPieModel(topAuthsShib));
+		dashboardTables.getShibTables().put(TABLE_TYPE.TOP5_YEAR, tableService.createGroupByTable(topAuthsShibYear));
+		dashboardGraphs.getShibCharts().put(CHART_TYPE.TOP5_YEAR, chartService.createPieModel(topAuthsShibYear));
+
+		dashboardGraphs.getShibCharts().put(CHART_TYPE.TOP5_TODAY, chartService.createPieModel(topAuthsShibToday));
+
 		// dashboardGraphs.getShibCharts().put(CHART_TYPE.TOP5DISTINCT,
 		// chartService.createPieModel(topAuthsShibDistinct));
 		dashboardGraphs.getShibCharts().put(CHART_TYPE.AUTHSPERMONTH_YEAR,

@@ -22,9 +22,15 @@ public class DashboardTables {
 	private static final Logger log = LoggerFactory.getLogger(DashboardTables.class);
 
 	public enum TABLE_TYPE {
-		TOP5,
+		TOP5_YEAR,
 
-		TOP5DISTINCT,
+		TOP5DISTINCT_YEAR,
+
+		TOP5_TODAY,
+
+		TOP5DISTINCT_TODAY,
+
+		AUTHSPERMONTH_TODAY
 	}
 
 	private Map<TABLE_TYPE, TableModel> shibTables = new HashMap<TABLE_TYPE, TableModel>();
