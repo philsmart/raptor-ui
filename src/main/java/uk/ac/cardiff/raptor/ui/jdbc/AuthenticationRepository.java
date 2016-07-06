@@ -66,7 +66,8 @@ public class AuthenticationRepository {
 	@Transactional(readOnly = true)
 	public GroupByResults findUserAuthenticationsGroupBy(final Search search, final String system) {
 
-		final String tableAddedSql = getUserSql.replace("$tableName", system);
+		String tableAddedSql = getUserSql.replace("$tableName", system);
+		tableAddedSql = tableAddedSql.replace("$groupBy", search.getType());
 		log.debug("Query is now [{}]", tableAddedSql);
 		try {
 			final GroupByResults results = jdbcTemplate.query(tableAddedSql,
@@ -82,7 +83,8 @@ public class AuthenticationRepository {
 
 	@Transactional(readOnly = true)
 	public GroupByResults findSchoolAuthentications(final Search search, final String system) {
-		final String tableAddedSql = getSchoolSql.replace("$tableName", system);
+		String tableAddedSql = getSchoolSql.replace("$tableName", system);
+		tableAddedSql = tableAddedSql.replace("$groupBy", search.getType());
 		log.debug("Query is now [{}]", tableAddedSql);
 		try {
 			final GroupByResults results = jdbcTemplate.query(tableAddedSql,
@@ -97,7 +99,8 @@ public class AuthenticationRepository {
 
 	@Transactional(readOnly = true)
 	public GroupByResults findServiceProviderAuthentications(final Search search, final String system) {
-		final String tableAddedSql = getServiceProviderSql.replace("$tableName", system);
+		String tableAddedSql = getServiceProviderSql.replace("$tableName", system);
+		tableAddedSql = tableAddedSql.replace("$groupBy", search.getType());
 		log.debug("Query is now [{}]", tableAddedSql);
 		try {
 			final GroupByResults results = jdbcTemplate.query(tableAddedSql,

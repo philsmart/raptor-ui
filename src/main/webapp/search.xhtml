@@ -78,7 +78,9 @@
 					
 					
 				</p:megaMenu> -->
-					
+				
+				
+				
 					
 					<p:inputText id="searchInput" value="#{search.term}" 
 						style="#{search.searchInputWidth}};text-align:center;-webkit-border-radius: 10px; -moz-border-radius: 10px;border-radius: 10px;margin:20px 0px 20px 0px">
@@ -96,7 +98,16 @@
 						value="#{search.to}" pattern="EEE, dd MMM, yyyy" effect="drop"
 						pages="1" navigator="true" />
 				</h:panelGrid>
-	
+				
+				<div style="margin-top:20px">
+				
+				
+					
+					<p:selectOneMenu id="car" value="#{search.type}">
+           				 <f:selectItem itemLabel="Select Search Type" itemValue="" />
+           				 <f:selectItems value="#{search.types}" />
+        			</p:selectOneMenu>
+				</div>
 
 
 			</div>

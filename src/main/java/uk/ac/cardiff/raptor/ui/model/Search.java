@@ -1,9 +1,13 @@
 package uk.ac.cardiff.raptor.ui.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +32,10 @@ public class Search {
 
 	private boolean serviceProvider = false;
 
+	private String type = "resourceId";
+
+	private List<SelectItem> types = new ArrayList<SelectItem>();
+
 	public String getSearchInputWidth() {
 		if (school || user) {
 			return "width:200px;";
@@ -42,21 +50,35 @@ public class Search {
 		to = new Date();
 		from = DateUtils.getStartOfYear();
 		user = true;
+		setType("resourceId");
+		initSearchType();
+	}
+
+	private void initSearchType() {
+		final SelectItemGroup g1 = new SelectItemGroup("Group By");
+		g1.setSelectItems(new SelectItem[] { new SelectItem("school", "School"),
+				new SelectItem("resourceId", "Service Provider"), new SelectItem("principalName", "User") });
+
+		types.add(g1);
+
 	}
 
 	public void toggleUser() {
+		setType("resourceId");
 		user = true;
 		school = false;
 		serviceProvider = false;
 	}
 
 	public void toggleSchool() {
+		setType("resourceId");
 		user = false;
 		school = true;
 		serviceProvider = false;
 	}
 
 	public void toggleServiceProvider() {
+		setType("school");
 		user = false;
 		school = false;
 		serviceProvider = true;
@@ -174,6 +196,36 @@ public class Search {
 		builder.append(serviceProvider);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * @param type
+	 *            the type to set
+	 */
+	public void setType(final String type) {
+		this.type = type;
+	}
+
+	/**
+	 * @return the types
+	 */
+	public List<SelectItem> getTypes() {
+		return types;
+	}
+
+	/**
+	 * @param types
+	 *            the types to set
+	 */
+	public void setTypes(final List<SelectItem> types) {
+		this.types = types;
 	}
 
 }
