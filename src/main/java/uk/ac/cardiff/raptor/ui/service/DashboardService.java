@@ -11,7 +11,6 @@ import uk.ac.cardiff.raptor.ui.jdbc.AuthenticationRepository;
 import uk.ac.cardiff.raptor.ui.model.DashboardGraphs;
 import uk.ac.cardiff.raptor.ui.model.DashboardGraphs.CHART_TYPE;
 import uk.ac.cardiff.raptor.ui.model.DashboardTables;
-import uk.ac.cardiff.raptor.ui.model.DashboardTables.TABLE_TYPE;
 import uk.ac.cardiff.raptor.ui.model.SystemSelection;
 import uk.ac.cardiff.raptor.ui.model.chart.GroupByResults;
 import uk.ac.cardiff.raptor.ui.utils.DateUtils;
@@ -39,7 +38,7 @@ public class DashboardService {
 	@Inject
 	private DashboardGraphs dashboardGraphs;
 
-	@Scheduled(fixedDelay = 500000)
+	@Scheduled(fixedDelay = 5000000)
 	public void createTopGraphs() throws DashboardException {
 
 		log.info("Running CREATE TOP graphs");
@@ -54,24 +53,37 @@ public class DashboardService {
 		final GroupByResults topAuthsShibYear = authRepository
 				.findTopServiceProvidersByAuthentications(DateUtils.getStartOfYear(), tableName);
 
-		final GroupByResults topAuthsShibToday = authRepository
-				.findTopServiceProvidersByAuthentications(DateUtils.getStartOfToday(), tableName);
-
 		// final GroupByResults topAuthsShibDistinct = authRepository
 		// .findTopServiceProvidersByAuthenticationsDistinctUsers(tableName);
 
 		final GroupByResults authsPerMonthYear = authRepository
 				.findAuthsToAllServiceProvidersByPeriod(DateUtils.getStartOfYear(), tableName, "week");
 
-		dashboardTables.getShibTables().put(TABLE_TYPE.TOP5_YEAR, tableService.createGroupByTable(topAuthsShibYear));
 		dashboardGraphs.getShibCharts().put(CHART_TYPE.TOP5_YEAR, chartService.createPieModel(topAuthsShibYear));
+
+		dashboardGraphs.getShibCharts().put(CHART_TYPE.AUTHSPER_YEAR, chartService.createLineModel(authsPerMonthYear));
+	}
+
+	@Scheduled(fixedDelay = 10000)
+	public void createTodayGraphsRT() throws DashboardException {
+
+		final SystemSelection system = new SystemSelection();
+		system.toggleShibboleth();
+
+		final String tableName = sqlMapper.mapToTableName(system)
+				.orElseThrow(() -> new DashboardException("No system set, one of Shibboleth or Ezproxy expected"));
+		log.debug("Searching using TableName [{}]", tableName);
+
+		final GroupByResults topAuthsShibToday = authRepository
+				.findTopServiceProvidersByAuthentications(DateUtils.getStartOfToday(), tableName);
+
+		final GroupByResults authsPerHourDay = authRepository
+				.findAuthsToAllServiceProvidersByPeriod(DateUtils.getStartOfToday(), tableName, "hour");
 
 		dashboardGraphs.getShibCharts().put(CHART_TYPE.TOP5_TODAY, chartService.createPieModel(topAuthsShibToday));
 
-		// dashboardGraphs.getShibCharts().put(CHART_TYPE.TOP5DISTINCT,
-		// chartService.createPieModel(topAuthsShibDistinct));
-		dashboardGraphs.getShibCharts().put(CHART_TYPE.AUTHSPERMONTH_YEAR,
-				chartService.createLineModel(authsPerMonthYear));
+		dashboardGraphs.getShibCharts().put(CHART_TYPE.AUTHSPER_TODAY, chartService.createLineModel(authsPerHourDay));
+
 	}
 
 }

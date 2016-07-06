@@ -11,17 +11,17 @@
 	padding: 20px 20px 20px 20px
 }
 </style>
-		<!-- <h:form>
+		 <h:form>
 
-			<p:poll interval="3" update="graphs" />
-		</h:form> -->
+			<p:poll interval="5" update="top5, auths" />
+		</h:form> 
 
 		<p:panelGrid columns="2"
 			style="display:block;text-align:center;margin-left:auto;margin-right:auto">
 
 
 
-			<p:panel header="Top 10 Service Provider Authentications"
+			<p:panel header="Top 10 Service Provider Authentications" id="top5"
 				style="display:block;text-align:center;margin-left:auto;margin-right:auto">
 
 
@@ -49,12 +49,12 @@
 
 
 		</p:panelGrid>
-		<p:panel header="Authentications Today">
+		<p:panel header="Authentications Today" id="auths">
 
 			<p:chart type="line"
-				model="#{dashboardGraphs.getShibChartsGetter('AUTHSPERMONTH_TODAY')}"
+				model="#{dashboardGraphs.getShibChartsGetter('AUTHSPER_TODAY')}"
 				responsive="true"
-				rendered="#{not empty dashboardGraphs.getShibChartsGetter('AUTHSPERMONTH_TODAY')}"
+				rendered="#{not empty dashboardGraphs.getShibChartsGetter('AUTHSPER_TODAY')}"
 				style="width:100%;height:500px;margin-left:auto;margin-right:auto" />
 
 		</p:panel>

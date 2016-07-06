@@ -169,7 +169,7 @@ public class AuthenticationRepository {
 
 			while (rs.next()) {
 				final GroupByResult rowResult = new GroupByResult();
-				log.debug("Row {},{}", rs.getString(1), rs.getString(2));
+				log.trace("Row {},{}", rs.getString(1), rs.getString(2));
 				rowResult.setFieldName(rs.getString(1));
 				final Long countLong = rs.getLong(2);
 				rowResult.setCount(countLong);

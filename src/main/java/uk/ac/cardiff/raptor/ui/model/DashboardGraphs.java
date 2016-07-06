@@ -18,13 +18,13 @@ public class DashboardGraphs {
 
 		TOP5DISTINCT_YEAR,
 
-		AUTHSPERMONTH_YEAR,
+		AUTHSPER_YEAR,
 
 		TOP5_TODAY,
 
 		TOP5DISTINCT_TODAY,
 
-		AUTHSPERMONTH_TODAY
+		AUTHSPER_TODAY
 	}
 
 	private Map<CHART_TYPE, ChartModel> shibCharts = new HashMap<CHART_TYPE, ChartModel>();
