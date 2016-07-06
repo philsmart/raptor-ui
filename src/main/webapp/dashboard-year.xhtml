@@ -16,7 +16,7 @@
 			<p:poll interval="3" update="graphs" />
 		</h:form> -->
 		
-		<p:panelGrid columns="2" style="width:100%">
+		<p:panelGrid columns="2" style="width:100%;text-align:center;margin-left:auto;margin-right:auto">
 
 		
 
@@ -35,7 +35,7 @@
 				header="Top 10 Service Provider Authentications (Distinct User)">
 				
 				
-				<p:chart type="pie" model="#{dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_YEAR')}" 
+				<p:chart type="pie" model="#{dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_YEAR')}"  responsive="true"
 					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_YEAR')}"
 					style="width:550px;height:800px;margin-left:auto;margin-right:auto" />
 

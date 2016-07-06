@@ -17,7 +17,7 @@
 		</h:form> 
 
 		<p:panelGrid columns="2"
-			style="display:block;text-align:center;margin-left:auto;margin-right:auto">
+			style="width:100%;text-align:center;margin-left:auto;margin-right:auto">
 
 
 
@@ -26,7 +26,7 @@
 
 
 				<p:chart type="pie"
-					model="#{dashboardGraphs.getShibChartsGetter('TOP5_TODAY')}"
+					model="#{dashboardGraphs.getShibChartsGetter('TOP5_TODAY')}" responsive="true"
 					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5_TODAY')}"
 					style="width:550px;height:800px;margin-left:auto;margin-right:auto" />
 
@@ -38,7 +38,7 @@
 				header="Top 10 Service Provider Authentications (Distinct User)">
 
 
-				<p:chart type="pie"
+				<p:chart type="pie" responsive="true"
 					model="#{dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_TODAY')}"
 					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_TODAY')}"
 					style="width:550px;height:800px;margin-left:auto;margin-right:auto" />
