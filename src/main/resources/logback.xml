@@ -78,7 +78,7 @@
 		<appender-ref ref="STDOUT" />
 	</root>
 
-	<logger name="org.springframework.web" level="DEBUG" additivity="true" />
+	<logger name="org.springframework.web" level="INFO" additivity="true" />
 
 
 	<logger name="org.apache.myfaces.config" level="TRACE" additivity="true" />
