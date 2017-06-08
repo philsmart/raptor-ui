@@ -19,8 +19,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.ac.cardiff.raptor.ui.model.Search;
+import uk.ac.cardiff.raptor.ui.model.Trace;
 import uk.ac.cardiff.raptor.ui.model.chart.GroupByResult;
 import uk.ac.cardiff.raptor.ui.model.chart.GroupByResults;
+import uk.ac.cardiff.raptor.ui.model.chart.TraceRow;
+import uk.ac.cardiff.raptor.ui.model.chart.TraceRows;
+import uk.ac.cardiff.raptor.ui.utils.JdbcUtils;
 
 @Repository
 public class AuthenticationRepository {
@@ -45,6 +49,12 @@ public class AuthenticationRepository {
 	@Value("${raptorui.sql.get.auths-per}")
 	private String authenticationsPerPeriod;
 
+	@Value("${raptorui.sql.get.top.service-providers.auths.count}")
+	private String authCount;
+
+	@Value("${raptorui.sql.get.previous-auths}")
+	private String previousAuths;
+
 	@Inject
 	private JdbcTemplate jdbcTemplate;
 
@@ -55,11 +65,15 @@ public class AuthenticationRepository {
 		Objects.requireNonNull(getSchoolSql);
 		Objects.requireNonNull(getServiceProviderSql);
 		Objects.requireNonNull(topServiceProvidersByAuthenticationsSql);
+		Objects.requireNonNull(authCount);
+		Objects.requireNonNull(previousAuths);
 		log.info("Has JdbcTemplate {}", jdbcTemplate.getDataSource());
 		log.info("User SQL is [{}]", getUserSql);
 		log.info("School SQL is [{}]", getSchoolSql);
 		log.info("Service-Provider SQL is [{}]", getServiceProviderSql);
 		log.info("Top ServiceProviders By Auths [{}]", getServiceProviderSql);
+		log.info("Authentication Count [{}]", authCount);
+		log.info("Previous Authentications [{}]", previousAuths);
 
 	}
 
@@ -146,11 +160,11 @@ public class AuthenticationRepository {
 	}
 
 	@Transactional(readOnly = true)
-	public GroupByResults findTopServiceProvidersByAuthenticationsDistinctUsers(final String system) {
+	public GroupByResults findTopServiceProvidersByAuthenticationsDistinctUsers(final Date from, final String system) {
 		final String tableAddedSql = topServiceProvidersByAuthenticationsDistinctUsersSql.replace("$tableName", system);
 		log.debug("Query is now [{}]", tableAddedSql);
 		try {
-			final GroupByResults results = jdbcTemplate.query(tableAddedSql, new Object[] {},
+			final GroupByResults results = jdbcTemplate.query(tableAddedSql, new Object[] { from },
 					new GroupByResultsExtractor());
 
 			return results;
@@ -158,6 +172,37 @@ public class AuthenticationRepository {
 			log.error("Issue getting top serviceproviders by authentications distinct", e);
 			throw e;
 		}
+	}
+
+	@Transactional(readOnly = true)
+	public Long findAllAuthsToServiceProvider(final String system, final Date from) {
+		final String tableAddedSql = authCount.replace("$tableName", system);
+		log.debug("Query is now [{}]", tableAddedSql);
+		try {
+			final Long count = jdbcTemplate.queryForObject(tableAddedSql, new Object[] { from }, Long.class);
+
+			return count;
+		} catch (final Throwable e) {
+			log.error("Issue getting top serviceproviders by authentications distinct", e);
+			throw e;
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public TraceRows findLastAuths(final Trace trace, final String system) {
+		String tableAddedSql = previousAuths.replace("$tableName", system);
+		tableAddedSql = tableAddedSql.replace("$limit", Integer.toString(trace.getAuthDepth()));
+		log.debug("Query is now [{}]", tableAddedSql);
+		try {
+			final TraceRows results = jdbcTemplate.query(tableAddedSql, new Object[] { trace.getSearch() },
+					new TraceRowsResultsExtractor());
+
+			return results;
+		} catch (final Throwable e) {
+			log.error("Issue getting top serviceproviders by authentications distinct", e);
+			throw e;
+		}
+
 	}
 
 	class GroupByResultsExtractor implements ResultSetExtractor<GroupByResults> {
@@ -177,6 +222,38 @@ public class AuthenticationRepository {
 				final Long countLong = rs.getLong(2);
 				rowResult.setCount(countLong);
 				results.getResults().add(rowResult);
+
+			}
+
+			return results;
+		}
+	}
+
+	class TraceRowsResultsExtractor implements ResultSetExtractor<TraceRows> {
+		@Override
+		public TraceRows extractData(final ResultSet rs) throws SQLException, DataAccessException {
+
+			final TraceRows results = new TraceRows();
+
+			final ResultSetMetaData meta = rs.getMetaData();
+
+			while (rs.next()) {
+				final TraceRow row = new TraceRow();
+				final Date eventTime = JdbcUtils.safeGetTime(rs, "event_time");
+				row.setEventTime(eventTime);
+
+				final String pricipalName = JdbcUtils.safeGetString(rs, "principal_name");
+				row.setPrincipalName(pricipalName);
+
+				final String resourceId = JdbcUtils.safeGetString(rs, "resource_id");
+				row.setResourceId(resourceId);
+
+				for (int i = 1; i <= meta.getColumnCount(); i++) {
+					row.getFields().put(meta.getColumnName(i), rs.getObject(meta.getColumnName(i)));
+
+				}
+				log.trace("trace row {}", row);
+				results.getRows().add(row);
 
 			}
 

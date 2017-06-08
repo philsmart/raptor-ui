@@ -103,7 +103,7 @@
 				
 				
 					
-					<p:selectOneMenu id="car" value="#{search.type}">
+					<p:selectOneMenu id="type" value="#{search.type}">
            				 <f:selectItem itemLabel="Select Search Type" itemValue="" />
            				 <f:selectItems value="#{search.types}" />
         			</p:selectOneMenu>
@@ -112,14 +112,7 @@
 
 			</div>
 			
-			<p:panel id="searchChart"  rendered="#{not empty searchGraph.chart}" 
-				style="margin-bottom:20px;margin-top:50px" toggleable="true" header="Results Graph">
-				<p:chart type="bar" model="#{searchGraph.chart}" style="#{searchGraph.chartHeight}" responsive="true"/>
-				
-				
-			</p:panel>
-			
-			<p:panel id="searchTable" rendered="#{not empty searchGraph.table}" toggleable="true" header="Results Table">
+			<p:panel id="searchTable" style="margin-top:50px" rendered="#{not empty searchGraph.table}" toggleable="true" header="Results Table">
 				<p:dataTable var="row" value="#{searchGraph.table.rows}">
 					<p:column headerText="Label">
 						<h:outputText value="#{row.label}" />
@@ -133,7 +126,16 @@
 
 				</p:dataTable>
 				
-				</p:panel>
-				</h:form>
+			</p:panel>
+			
+			<p:panel id="searchChart"  rendered="#{not empty searchGraph.chart}" 
+				style="margin-bottom:20px" toggleable="true" header="Results Graph" collapsed="true">
+				<p:chart type="bar" model="#{searchGraph.chart}" style="#{searchGraph.chartHeight}" responsive="true"/>
+				
+				
+			</p:panel>
+			
+			
+		</h:form>
 	</ui:define>
 </ui:composition>

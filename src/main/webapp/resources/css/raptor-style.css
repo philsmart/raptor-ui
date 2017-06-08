@@ -1,0 +1,72 @@
+@CHARSET "UTF-8";
+
+html,body {
+   margin: 0px;
+    font-family: 'DejaVu Sans Mono', monospace;
+   padding: 0px;
+}
+
+.ui-megamenu {
+	background: black;
+}
+
+.icon-white {
+	color: white
+}
+
+a {
+  color:inherit;
+  text-decoration: none;
+ }
+ 
+
+.ui-datatable-odd {
+background: none repeat scroll 0 0 #F2F5F9;
+}
+
+#banner {
+    display: block;
+    background-color: darkblue;
+    color: white;
+    font-family: 'DejaVu Sans Mono', monospace;
+  z-index:9998;
+    text-align: center;
+    padding: 10px 10px 10px 10px;
+    margin-bottom: 20px;
+   position: fixed;
+   width:99%;
+}
+
+/* .ui-widget-header{
+	background:#030358;
+} */
+
+#subBanner {
+    display: block;
+    background-color: #030358;
+    color: white;
+    font-family: 'DejaVu Sans Mono', monospace;
+  	margin-top: 40px;
+  	z-index:9999;
+    text-align: left;
+    padding: 5px 5px 5px 5px;
+    margin-bottom: 5px;
+   position: fixed;
+   width:99.5%;
+}
+
+#content{
+	margin-left: auto;
+    padding-top: 90px;
+    margin-right: auto;
+    
+    width: 90%;
+	
+}
+
+
+    
+    
+    
+
+}

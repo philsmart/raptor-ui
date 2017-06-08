@@ -13,7 +13,7 @@ import uk.ac.cardiff.raptor.ui.model.SystemSelection;
 @Service
 final public class SearchToSqlMapper {
 
-	@Value("${raptorui.sql.mapper.tablename.shibboleth:shibidpauthe}")
+	@Value("${raptorui.sql.mapper.tablename.shibboleth:SHIB_IDP_AUTH_EVENT}")
 	private String shibbolethTableName;
 
 	@Value("${raptorui.sql.mapper.tablename.ezproxy:ezproxyauthe}")

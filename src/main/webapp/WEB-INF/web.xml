@@ -17,7 +17,7 @@
 		<param-name>primefaces.CLIENT_SIDE_VALIDATION</param-name>
 		<param-value>true</param-value>
 	</context-param>
-
+	
 	<mime-mapping>
 		<extension>eot</extension>
 		<mime-type>application/vnd.ms-fontobject</mime-type>
