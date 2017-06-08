@@ -1,0 +1,112 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="templates/template.xhtml">
+	<ui:define name="content">
+		<style type="text/css">
+.big-icon {
+	padding: 20px 20px 20px 20px
+}
+</style>
+		<h:form id="searchForm">
+
+
+
+			<div style="text-align: center; displasy: block">
+				<i class="fa fa-users fa-2x" style="" aria-hidden="true"></i> Find
+				last
+				<p:spinner id="lastX" size="3" value="#{trace.authDepth}" />
+				authentications for
+
+				<p:inputText id="searchInput" value="#{trace.search}"
+					style="#{search.searchInputWidth}};text-align:center;-webkit-border-radius: 10px; -moz-border-radius: 10px;border-radius: 10px;margin:20px 0px 20px 0px">
+				</p:inputText>
+
+
+				<p:commandButton value="Search" icon="fa fa-search"
+					action="#{traceService.trace(systemSelection,trace)}" ajax="false"
+					update="traceTable" />
+
+			</div>
+
+			<div>
+				<p:timeline id="timeline" value="#{trace.searchResultsTimeline}"
+					height="250px" selectable="true" zoomable="true" moveable="true"
+					stackEvents="true" axisOnTop="true" showCurrentTime="true">
+
+				</p:timeline>
+			</div>
+
+
+			<div style="padding-top:10px">
+
+				<p:dataTable var="row" value="#{trace.searchResult.rows}"
+					rendered="#{not empty trace.searchResult and not empty trace.searchResult.rows}">
+
+					<p:column width="25" style="text-align:center">
+
+						<p:commandLink id="infoCommand">
+							<i class="fa fa-info-circle" aria-hidden="true"></i>
+						</p:commandLink>
+
+						<ui:repeat value="#{row.fields}" var="field">
+							<h:outputText value="#{field.value}" />
+						</ui:repeat>
+
+						<p:overlayPanel id="infoPanel" for="infoCommand"
+							showEffect="blind" showEvent="mousedown" hideEvent="mousedown"
+							dismissable="false" showCloseIcon="true">
+							<p:dataTable value="#{row.fields.keySet().toArray()}" var="field"
+								tableStyle="width:auto;font-size:x-small">
+
+								<p:column headerText="Attribute">
+									<h:outputText value="#{field}" />
+								</p:column>
+
+								<p:column headerText="Value"
+									style="max-width:800px;overflow:scroll">
+									<h:outputText value="#{row.fields[field]}" />
+								</p:column>
+
+							</p:dataTable>
+
+						</p:overlayPanel>
+
+
+					</p:column>
+
+					<p:column headerText="Time" sortBy="#{row.eventTime}">
+						<h:outputText value="#{row.eventTime}" >
+							<f:convertDateTime pattern="EEE dd MMM yyyy HH:mm:ss z" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Principal">
+						<h:outputText value="#{row.principalName}" />
+					</p:column>
+
+					<p:column headerText="Resource" sortBy="#{row.resourceId}">
+						<h:outputText value="#{row.resourceId}" />
+					</p:column>
+
+
+
+				</p:dataTable>
+
+			</div>
+
+
+
+
+
+
+
+
+
+
+		</h:form>
+	</ui:define>
+</ui:composition>

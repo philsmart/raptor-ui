@@ -23,6 +23,8 @@ public class ChartService {
 	public LineChartModel createLineModel(final GroupByResults results) {
 
 		final LineChartModel model = new LineChartModel();
+		model.setAnimate(true);
+		model.setZoom(true);
 
 		final ChartSeries series = new ChartSeries();
 
@@ -30,7 +32,7 @@ public class ChartService {
 			series.set(result.getFieldName(), result.getCount());
 		}
 
-		model.getAxes().put(AxisType.X, new DateAxis("Weeks"));
+		model.getAxes().put(AxisType.X, new DateAxis("Period"));
 		model.getAxes().put(AxisType.Y, new LinearAxis("Authentications"));
 
 		model.addSeries(series);
@@ -44,7 +46,7 @@ public class ChartService {
 			model.set(row.getFieldName(), row.getCount());
 		}
 		model.setShowDataLabels(true);
-		model.setDiameter(300);
+		model.setDiameter(250);
 		model.setLegendPosition("s");
 		return model;
 	}

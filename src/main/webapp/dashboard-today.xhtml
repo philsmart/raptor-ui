@@ -11,53 +11,56 @@
 	padding: 20px 20px 20px 20px
 }
 </style>
-		 <h:form>
+		<h:form>
 
-			<p:poll interval="5" update="top5, auths" />
-		</h:form> 
+			<p:poll interval="10" update="auths" />
+		</h:form>
 
-		<p:panelGrid columns="2"
-			style="width:100%;text-align:center;margin-left:auto;margin-right:auto">
+		<p
+			style="position: fixed; display: inline; top: 53px; left: 0px; z-index: 99999; background: #eaa228; border: 1px SOLID; padding: 2px; color: white">
+			<i class="fa fa-tachometer icon-white" aria-hidden="true" /> TODAY
+		</p>
 
+		<h:panelGrid columns="2" style="text-align:center;width:100%">
 
+			<h:panelGroup>
+				<p style="text-align: center">Top 5 Authentications By Service
+					Provider</p>
 
-			<p:panel header="Top 10 Service Provider Authentications" id="top5"
-				style="display:block;text-align:center;margin-left:auto;margin-right:auto">
+			</h:panelGroup>
 
+			<h:panelGroup>
+				<p style="text-align: center">Top 5 Authentications By Service
+					Provider (Distinct Users)</p>
 
-				<p:chart type="pie"
-					model="#{dashboardGraphs.getShibChartsGetter('TOP5_TODAY')}" responsive="true"
-					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5_TODAY')}"
-					style="width:550px;height:800px;margin-left:auto;margin-right:auto" />
+			</h:panelGroup>
 
-
-			</p:panel>
-
-			<p:panel
-				style="display:block;text-align:center;margin-left:auto;margin-right:auto;height:850px"
-				header="Top 10 Service Provider Authentications (Distinct User)">
-
-
-				<p:chart type="pie" responsive="true"
-					model="#{dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_TODAY')}"
-					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_TODAY')}"
-					style="width:550px;height:800px;margin-left:auto;margin-right:auto" />
-
-			</p:panel>
-
-
-
-
-		</p:panelGrid>
-		<p:panel header="Authentications Today" id="auths">
-
-			<p:chart type="line"
-				model="#{dashboardGraphs.getShibChartsGetter('AUTHSPER_TODAY')}"
+			<p:chart type="pie"
+				model="#{dashboardGraphs.getShibChartsGetter('TOP5_TODAY')}"
 				responsive="true"
-				rendered="#{not empty dashboardGraphs.getShibChartsGetter('AUTHSPER_TODAY')}"
-				style="width:100%;height:500px;margin-left:auto;margin-right:auto" />
+				rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5_TODAY')}"
+				style="width:400px;height:600px	;margin-left:auto;margin-right:auto" />
 
-		</p:panel>
+
+
+
+			<p:chart type="pie" responsive="true"
+				model="#{dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_TODAY')}"
+				rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_TODAY')}"
+				style="width:400px;height:600px;margin-left:auto;margin-right:auto" />
+		</h:panelGrid>
+
+
+		<p style="text-align: center">Authentications Today</p>
+
+
+		<p:chart type="line" id="auths"
+			model="#{dashboardGraphs.getShibChartsGetter('AUTHSPER_TODAY')}"
+			responsive="true"
+			rendered="#{not empty dashboardGraphs.getShibChartsGetter('AUTHSPER_TODAY')}"
+			style="width:100%;height:400px;margin-left:auto;margin-right:auto" />
+
+
 
 	</ui:define>
 </ui:composition>

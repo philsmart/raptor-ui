@@ -15,43 +15,58 @@
 
 			<p:poll interval="3" update="graphs" />
 		</h:form> -->
-		
-		<p:panelGrid columns="2" style="width:100%;text-align:center;margin-left:auto;margin-right:auto">
-
-		
-
-			<p:panel 
-				 header="Top 10 Service Provider Authentications" style="display:block;text-align:center;margin-left:auto;margin-right:auto">
 
 
-				<p:chart type="pie" model="#{dashboardGraphs.getShibChartsGetter('TOP5_YEAR')}" responsive="true"
-					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5_YEAR')}"
-					style="width:550px;height:800px;margin-left:auto;margin-right:auto" />
+		<p
+			style="position: fixed; display: inline; top: 53px; left: 0px; z-index: 99999; background: #eaa228; border: 1px SOLID; padding: 2px; color: white">
+			<i class="fa fa-tachometer icon-white" aria-hidden="true" /> YEAR
+		</p>
 
-				
-			</p:panel>
 
-			<p:panel style="display:block;text-align:center;margin-left:auto;margin-right:auto;height:850px"
-				header="Top 10 Service Provider Authentications (Distinct User)">
-				
-				
-				<p:chart type="pie" model="#{dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_YEAR')}"  responsive="true"
-					rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_YEAR')}"
-					style="width:550px;height:800px;margin-left:auto;margin-right:auto" />
 
-			</p:panel>
+		<h:panelGrid columns="2" style="text-align:center;width:100%">
 
-			
-		
-		
-		</p:panelGrid>
-		<p:panel header="Authentications This Year">
-		
-		<p:chart type="line" model="#{dashboardGraphs.getShibChartsGetter('AUTHSPER_YEAR')}"  responsive="true" widgetVar="chart"
-					rendered="#{not empty dashboardGraphs.getShibChartsGetter('AUTHSPER_YEAR')}"
-					style="width:100%;height:500px;margin-left:auto;margin-right:auto" />
 
-	</p:panel>
+			<h:panelGroup>
+				<p style="text-align: center">Top 5 Authentications By Service
+					Provider</p>
+
+			</h:panelGroup>
+
+			<h:panelGroup>
+				<p style="text-align: center">Top 5 Authentications By Service
+					Provider (Distinct Users)</p>
+			</h:panelGroup>
+
+			<p:chart type="pie"
+				model="#{dashboardGraphs.getShibChartsGetter('TOP5_YEAR')}"
+				responsive="true"
+				rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5_YEAR')}"
+				style="width:400px;height:600px	;margin-left:auto;margin-right:auto" />
+
+
+
+			<p:chart type="pie"
+				model="#{dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_YEAR')}"
+				responsive="true"
+				rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_YEAR')}"
+				style="width:400px;height:600px	;margin-left:auto;margin-right:auto" />
+
+
+		</h:panelGrid>
+
+
+
+
+		<p style="text-align: center">Authentications This Year</p>
+
+		<p:chart type="line"
+			model="#{dashboardGraphs.getShibChartsGetter('AUTHSPER_YEAR')}"
+			responsive="true" widgetVar="chart"
+			rendered="#{not empty dashboardGraphs.getShibChartsGetter('AUTHSPER_YEAR')}"
+			style="width:100%;height:400px;margin-left:auto;margin-right:auto" />
+
+
 
 	</ui:define>
 </ui:composition>

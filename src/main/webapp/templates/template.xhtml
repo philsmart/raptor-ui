@@ -10,114 +10,99 @@
 
 <f:view contentType="text/html" id="fview">
 
-
-
-
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>RaptorUI</title>
-	<ui:debug />
-	<f:metadata>
-		<ui:insert name="metadata" />
-	</f:metadata>
+	<script src="https://use.fontawesome.com/595d117f8e.js" />
 
 	<h:head>
-
-		<style>
-.ui-megamenu {
-	background: black;
-}
-
-.icon-white {
-	color: white
-}
-</style>
+		<h:outputStylesheet name="raptor-style.css" library="css" />
+		<title>Raptor UI</title>
 
 	</h:head>
 
 
 	<h:body>
 
-		<!-- <p:ajaxStatus onstart="PF('statusDialog').show()"
-			onsuccess="PF('statusDialog').hide()" /> -->
 
 
-		<div id="left"
-			style="float: left; background-color: black; width: 62px; height: 100%; position: fixed; margin-left: -8px; margin-top: -8px">
-			<h:outputText value="v0.0.1"
-				style="margin-left:5px;margin-top:5px;color:gray" />
+		<div id="banner">
+			<div style="text-align: left; display: inline; float: left">
+				<i class="fa fa-bicycle" /> <span style="font-size: small">#{msg['institution']}
+					Raptor</span>
+			</div>
 			<h:form>
-				<p:megaMenu orientation="vertical"
-					style="width:40px;-webkit-border-radius: 0px; border-radius: 0px;margin-top:10px; margin-left:5px;border:0px">
-					<p:submenu icon="fa fa-cog icon-white">
-						<p:column>
+				<div
+					style="text-align: center; display: inline; margin-left: -200px">
 
-							<p:graphicImage rendered="#{systemSelection.isShibboleth()}"
-								style="height:50px; vertical-align:middle"
-								value="resources/images/shibboleth.png" />
-							<p:graphicImage rendered="#{systemSelection.isEzproxy()}"
-								style="height:40px; vertical-align:middle"
-								value="resources/images/ezproxy.png" />
-							<p:submenu label="Select System">
-								<p:menuitem value="Shibboleth"
-									action="#{systemSelection.toggleShibboleth()}" ajax="false">
+					
+						<h:graphicImage rendered="#{systemSelection.isShibboleth()}"
+							style="height:30px; vertical-align:middle;margin-top:-5px; border-bottom:4px SOLID"
+							value="resources/images/shibboleth.png" />
+				
 
-								</p:menuitem>
+					<h:commandLink action="#{systemSelection.toggleShibboleth()}">
+						<h:graphicImage
+							rendered="#{systemSelection.isShibboleth()==false}"
+							style="height:30px; vertical-align:middle;margin-top:-5px"
+							value="resources/images/shibboleth.png" />
+					</h:commandLink>
 
-								<p:menuitem value="Ezproxy"
-									action="#{systemSelection.toggleEzproxy()}" ajax="false" />
-							</p:submenu>
-						</p:column>
-					</p:submenu>
+					<h:graphicImage rendered="#{systemSelection.isEzproxy()}"
+						style="margin-left:20px;height:25px; vertical-align:middle;margin-top:-5px; border-bottom:4px SOLID"
+						value="resources/images/ezproxy.png" />
 
-					<p:menuitem icon="fa fa-search icon-white" action="search.html"
-						ajax="false" />
+					<h:commandLink action="#{systemSelection.toggleEzproxy()}">
+						<h:graphicImage action="#{systemSelection.toggleShibboleth()}"
+							rendered="#{systemSelection.isEzproxy()==false}"
+							style="margin-left:20px;height:25px; vertical-align:middle;margin-top:-5px"
+							value="resources/images/ezproxy.png" />
+					</h:commandLink>
 
+				</div>
+			</h:form>
+			<div style="text-align: center; position: fixed; right: 0px;top:10px">
+			
+			
+				Todays Auths 
+				<span style="border:1px SOLID;background:#bcc7cf;color:black"><h:outputText value="#{dashboardScalers.scalers[systemSelection.selected.name()]['AUTHS_TODAY']}"/></span>
+				
 
-					<p:submenu icon="fa fa-tachometer icon-white">
-						<p:column>
+				<i class="fa fa-user" /> <span style="font-size: small"><h:outputText
+						value="#{userContext.username}" /> [<h:outputText
+						value="#{userContext.roles}" />] </span>
 
+			</div>
+		</div>
+		<div id="subBanner">
+			<h:form style="display:inline">
 
-							<p:submenu label="Select Dashboard Period">
-								<p:menuitem value="This Year" action="dashboard-year.xhtml"
-									ajax="false">
+				<h:commandLink action="search.html">
+					<i class="fa fa-search icon-white" aria-hidden="true"> Search</i>
+				</h:commandLink>
+				
+				<h:commandLink action="trace.html">
+					<i class="fa fa-file-text-o" aria-hidden="true"> Trace</i>
+				</h:commandLink>
 
+				<h:commandLink action="dashboard-today.html">
+					<i class="fa fa-tachometer icon-white" aria-hidden="true">
+						Today</i>
+				</h:commandLink>
 
-								</p:menuitem>
-								<p:menuitem value="Today" action="dashboard-today.xhtml"
-									ajax="false">
-									</p:menuitem>
-
-
-							</p:submenu>
-						</p:column>
-					</p:submenu>
-
-
-
-					<p:menuitem icon="fa fa-sign-out icon-white"
-						style="margin-top:20px" />
-				</p:megaMenu>
+				<h:commandLink action="dashboard-year.html">
+					<i class="fa fa-tachometer icon-white" aria-hidden="true"> Last
+						Year</i>
+				</h:commandLink>
 			</h:form>
 
+			<h:form style="display:inline;float:right">
+				<a href="logout"><i class="fa fa-sign-out" /></a>
 
-
+			</h:form>
 		</div>
 
-		<div id="header" style="text-align: center; padding-bottom: 50px">
-			<ui:insert name="header">
-
-				<b>RaptorUI@ </b>
-				<h:graphicImage rendered="#{systemSelection.isShibboleth()}"
-					style="height:50px; vertical-align:middle"
-					value="resources/images/shibboleth.png" alt="shibboleth" />
-				<h:graphicImage rendered="#{systemSelection.isEzproxy()}"
-					style="height:40px; vertical-align:middle"
-					value="resources/images/ezproxy.png" alt="ezproxy" />
 
 
 
-			</ui:insert>
-		</div>
+
 
 
 

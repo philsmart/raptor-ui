@@ -32,7 +32,7 @@ public class Search {
 
 	private boolean serviceProvider = false;
 
-	private String type = "resourceId";
+	private String type = "resource_id";
 
 	private List<SelectItem> types = new ArrayList<SelectItem>();
 
@@ -50,28 +50,28 @@ public class Search {
 		to = new Date();
 		from = DateUtils.getStartOfYear();
 		user = true;
-		setType("resourceId");
+		setType("resource_id");
 		initSearchType();
 	}
 
 	private void initSearchType() {
 		final SelectItemGroup g1 = new SelectItemGroup("Group By");
 		g1.setSelectItems(new SelectItem[] { new SelectItem("school", "School"),
-				new SelectItem("resourceId", "Service Provider"), new SelectItem("principalName", "User") });
+				new SelectItem("resource_id", "Service Provider"), new SelectItem("principal_name", "User") });
 
 		types.add(g1);
 
 	}
 
 	public void toggleUser() {
-		setType("resourceId");
+		setType("resource_id");
 		user = true;
 		school = false;
 		serviceProvider = false;
 	}
 
 	public void toggleSchool() {
-		setType("resourceId");
+		setType("resource_id");
 		user = false;
 		school = true;
 		serviceProvider = false;

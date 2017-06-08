@@ -18,9 +18,10 @@ public class ConfigureJSFContextParameters implements ServletContextInitializer 
 		servletContext.setInitParameter("facelets.DEVELOPMENT", "true");
 		servletContext.setInitParameter("javax.faces.FACELETS_REFRESH_PERIOD", "1");
 		servletContext.setInitParameter("primefaces.FONT_AWESOME", "true");
-		servletContext.setInitParameter("primefaces.THEME", "blitzer");
+		servletContext.setInitParameter("primefaces.THEME", "raptor");
 
 		servletContext.setInitParameter("org.apache.myfaces.annotation.SCAN_PACKAGES", "uk.ac.cardiff.raptor.ui");
 
 	}
+
 }
