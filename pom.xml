@@ -6,7 +6,7 @@
 	<groupId>uk.ac.cardiff.raptor</groupId>
 	<artifactId>raptor-ui</artifactId>
 	<version>0.1.2-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>raptor-ui</name>
 	<description>Raptor UI</description>
@@ -52,7 +52,7 @@
 			<artifactId>myfaces-api</artifactId>
 			<version>2.2.8</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.hsqldb/hsqldb -->
 		<dependency>
 			<groupId>org.hsqldb</groupId>
@@ -72,7 +72,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			
+
 		</dependency>
 
 
@@ -101,23 +101,25 @@
 			<scope>compile</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.primefaces/primefaces -->
-<dependency>
-    <groupId>org.primefaces</groupId>
-    <artifactId>primefaces</artifactId>
-    <version>6.1</version>
-</dependency>
+		<dependency>
+			<groupId>org.primefaces</groupId>
+			<artifactId>primefaces</artifactId>
+			<version>6.1</version>
+		</dependency>
 
 
-<!-- 		<dependency>
-			<groupId>org.primefaces.extensions</groupId>
-			<artifactId>all-themes</artifactId>
-			<version>1.0.8</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.primefaces.extensions</groupId> <artifactId>all-themes</artifactId> 
+			<version>1.0.8</version> </dependency> -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
