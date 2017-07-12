@@ -57,8 +57,20 @@ public class SearchService {
 
 		graph.setChart(chartService.createHorizontalBarModel(results));
 		graph.setTable(tableService.createGroupByTable(results));
+		graph.setPie(chartService.createPieModel(results, 150, false));
 	}
 
+	/**
+	 * Selects which type of search to run based on the
+	 * {@link Search#isSchool()} {@link Search#isUser()}
+	 * {@link Search#isServiceProvider()} booleans being set
+	 * 
+	 * @param search
+	 *            the {@link Search} object
+	 * @param tableName
+	 *            the name of the table to query
+	 * @return a {@link GroupByResults} object with the results of the query
+	 */
 	private GroupByResults selectRunSearch(final Search search, final String tableName) {
 		if (search.isUser()) {
 			return authRepository.findUserAuthenticationsGroupBy(search, tableName);

@@ -5,6 +5,7 @@ import javax.faces.bean.RequestScoped;
 
 import org.primefaces.model.chart.ChartModel;
 import org.primefaces.model.chart.HorizontalBarChartModel;
+import org.primefaces.model.chart.PieChartModel;
 
 @ManagedBean
 @RequestScoped
@@ -16,6 +17,8 @@ public class SearchGraph {
 	private ChartModel chart;
 
 	private TableModel table;
+
+	private PieChartModel pie;
 
 	public String getChartHeight() {
 		if (chart instanceof HorizontalBarChartModel) {
@@ -60,6 +63,20 @@ public class SearchGraph {
 	 */
 	public void setTable(final TableModel table) {
 		this.table = table;
+	}
+
+	/**
+	 * @return the pie
+	 */
+	public PieChartModel getPie() {
+		return pie;
+	}
+
+	/**
+	 * @param pie the pie to set
+	 */
+	public void setPie(PieChartModel pie) {
+		this.pie = pie;
 	}
 
 }

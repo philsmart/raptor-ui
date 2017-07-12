@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import uk.ac.cardiff.raptor.ui.model.DashboardGraphs.CHART_TYPE;
+import uk.ac.cardiff.raptor.ui.model.SystemSelection.SYSTEM;
 import uk.ac.cardiff.raptor.ui.model.chart.TableModel;
 
 /**
@@ -33,48 +33,24 @@ public class DashboardTables {
 		AUTHSPERMONTH_TODAY
 	}
 
-	private Map<TABLE_TYPE, TableModel> shibTables = new HashMap<TABLE_TYPE, TableModel>();
+	private final Map<String, Map<String, TableModel>> tables = new HashMap<String, Map<String, TableModel>>();
 
-	private Map<TABLE_TYPE, TableModel> ezproxyTables = new HashMap<TABLE_TYPE, TableModel>();
+	public void addTable(final TABLE_TYPE type, final TableModel value, final SYSTEM system) {
+		if (tables.containsKey(system.name())) {
+			tables.get(system.name()).put(type.name(), value);
+		} else {
+			final Map<String, TableModel> inner = new HashMap<String, TableModel>();
+			inner.put(type.name(), value);
+			tables.put(system.name(), inner);
+		}
 
-	public TableModel getShibTableGetter(final String chartType) {
-		final CHART_TYPE type = CHART_TYPE.valueOf(chartType);
-		return shibTables.get(type);
-	}
-
-	public TableModel getExproxyTableGetter(final String chartType) {
-		final CHART_TYPE type = CHART_TYPE.valueOf(chartType);
-		return ezproxyTables.get(type);
-	}
-
-	/**
-	 * @return the shibTables
-	 */
-	public final Map<TABLE_TYPE, TableModel> getShibTables() {
-		return shibTables;
 	}
 
 	/**
-	 * @param shibTables
-	 *            the shibTables to set
+	 * @return the tables
 	 */
-	public final void setShibTables(final Map<TABLE_TYPE, TableModel> shibTables) {
-		this.shibTables = shibTables;
-	}
-
-	/**
-	 * @return the ezproxyCharts
-	 */
-	public final Map<TABLE_TYPE, TableModel> getEzproxyTables() {
-		return ezproxyTables;
-	}
-
-	/**
-	 * @param ezproxyCharts
-	 *            the ezproxyCharts to set
-	 */
-	public final void setEzproxyTables(final Map<TABLE_TYPE, TableModel> ezproxyTables) {
-		this.ezproxyTables = ezproxyTables;
+	public Map<String, Map<String, TableModel>> getTables() {
+		return tables;
 	}
 
 }

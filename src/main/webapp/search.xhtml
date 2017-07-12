@@ -10,8 +10,6 @@
 .big-icon {
 	padding: 20px 20px 20px 20px
 }
-
-
 </style>
 		<h:form id="searchForm">
 			<div style="display: block; text-align: center">
@@ -51,41 +49,35 @@
 
 						</p:panelGrid>
 					</h:commandLink>
-				</span>
+				</span>	
 
 				<div style="padding-top: 20px">
-				
-					
-				
 
-					
-				<!-- 	<p:megaMenu orientation="horizontal" style="">
-					<p:submenu icon="fa fa-cog">
-						<p:column>							
-							<p:submenu label="Grouping">
-								<p:menuitem value="Service Provider"
-									 ajax="false">
-								</p:menuitem>
-								<p:menuitem value="School"
-									 ajax="false" />
-							</p:submenu>
-							<p:submenu label="Over Time">
-								<p:menuitem value="Monthly"
-									 ajax="false"/>
-							</p:submenu>
-						</p:column>
-					</p:submenu>
-					
-					
-				</p:megaMenu> -->
-				
-				
-				
-					
-					<p:inputText id="searchInput" value="#{search.term}" 
+
+
+					<p:inputText id="searchInput" value="#{search.term}"
+						rendered="#{search.isUser()}"
 						style="#{search.searchInputWidth}};text-align:center;-webkit-border-radius: 10px; -moz-border-radius: 10px;border-radius: 10px;margin:20px 0px 20px 0px">
-						</p:inputText>
-					<p:commandButton value="Search" icon="fa fa-search" action="#{searchService.search(systemSelection,search,searchGraph)}" ajax="false" update="searchChart"/>
+					</p:inputText>
+
+					<p:autoComplete size="#{search.searchInputWidthInt}"
+						rendered="#{search.isSchool()}" id="departmentAutocomplete"
+						style="#{search.searchInputWidth};text-align:center;-webkit-border-radius: 10px; -moz-border-radius: 10px;border-radius: 10px;margin:20px 0px 20px 0px"
+						minQueryLength="2" value="#{search.term}"
+						completeMethod="#{autoCompleteServiceProviderService.completeDepartments}"
+						effect="fade" />
+
+					<p:autoComplete size="#{search.searchInputWidthInt}"
+						rendered="#{search.isServiceProvider()}"
+						id="serviceProviderAutocomplete"
+						style="#{search.searchInputWidth};text-align:center;-webkit-border-radius: 10px; -moz-border-radius: 10px;border-radius: 10px;margin:20px 0px 20px 0px"
+						minQueryLength="3" value="#{search.term}"
+						completeMethod="#{autoCompleteServiceProviderService.completeServiceProvider}"
+						effect="fade" />
+
+					<p:commandButton value="Search" icon="fa fa-search"
+						action="#{searchService.search(systemSelection,search,searchGraph)}"
+						ajax="false" update="searchChart" />
 				</div>
 				<h:panelGrid columns="4" style="text-align:center; display:inline"
 					cellpadding="5">
@@ -98,44 +90,57 @@
 						value="#{search.to}" pattern="EEE, dd MMM, yyyy" effect="drop"
 						pages="1" navigator="true" />
 				</h:panelGrid>
-				
-				<div style="margin-top:20px">
-				
-				
-					
+
+				<div style="margin-top: 20px">
+
+
+
 					<p:selectOneMenu id="type" value="#{search.type}">
-           				 <f:selectItem itemLabel="Select Search Type" itemValue="" />
-           				 <f:selectItems value="#{search.types}" />
-        			</p:selectOneMenu>
+						<f:selectItem itemLabel="Select Search Type" itemValue="" />
+						<f:selectItems value="#{search.types}" />
+					</p:selectOneMenu>
 				</div>
 
 
 			</div>
-			
-			<p:panel id="searchTable" style="margin-top:50px" rendered="#{not empty searchGraph.table}" toggleable="true" header="Results Table">
-				<p:dataTable var="row" value="#{searchGraph.table.rows}">
-					<p:column headerText="Label">
-						<h:outputText value="#{row.label}" />
-					</p:column>
 
-					<p:column headerText="Value">
-						<h:outputText value="#{row.value}" />
-					</p:column>
 
-					
 
-				</p:dataTable>
-				
+			<p:panel id="searchTable" style="margin-top:50px"
+				rendered="#{not empty searchGraph.table}" toggleable="true"
+				header="Results Table">
+				<h:panelGrid columns="2">
+					<p:dataTable var="row" value="#{searchGraph.table.rows}">
+						<p:column headerText="Label">
+							<h:outputText value="#{row.label}" />
+						</p:column>
+
+						<p:column headerText="Value" width="20%">
+							<h:outputText value="#{row.value}" />
+						</p:column>
+
+
+
+					</p:dataTable>
+
+
+
+					<p:chart type="pie" model="#{searchGraph.pie}" responsive="true"
+						rendered="#{not empty searchGraph.pie and  search.isUser()}"
+						style="width:200px;height:200px	;margin-left:auto;margin-right:auto" />
+				</h:panelGrid>
 			</p:panel>
-			
-			<p:panel id="searchChart"  rendered="#{not empty searchGraph.chart}" 
-				style="margin-bottom:20px" toggleable="true" header="Results Graph" collapsed="true">
-				<p:chart type="bar" model="#{searchGraph.chart}" style="#{searchGraph.chartHeight}" responsive="true"/>
-				
-				
+
+			<p:panel id="searchChart" rendered="#{not empty searchGraph.chart}"
+				style="margin-bottom:20px" toggleable="true" header="Results Graph"
+				collapsed="true">
+				<p:chart type="bar" model="#{searchGraph.chart}"
+					style="#{searchGraph.chartHeight}" responsive="true" />
+
+
 			</p:panel>
-			
-			
+
+
 		</h:form>
 	</ui:define>
 </ui:composition>

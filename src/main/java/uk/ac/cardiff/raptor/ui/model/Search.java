@@ -38,11 +38,20 @@ public class Search {
 
 	public String getSearchInputWidth() {
 		if (school || user) {
-			return "width:200px;";
+			return "width:250px;";
 		} else if (serviceProvider) {
 			return "width:400px;";
 		}
-		return "width:200px;";
+		return "width:250px;";
+	}
+
+	public String getSearchInputWidthInt() {
+		if (school || user) {
+			return "25";
+		} else if (serviceProvider) {
+			return "45";
+		}
+		return "30;";
 	}
 
 	public Search() {

@@ -23,8 +23,8 @@ public class DashboardScalers {
 	private final Map<String, Map<String, Long>> scalers = new HashMap<String, Map<String, Long>>();
 
 	public void addScaler(final SCALER_TYPE type, final Long value, final SYSTEM system) {
-		if (scalers.containsKey(system)) {
-			scalers.get(system).put(type.name(), value);
+		if (scalers.containsKey(system.name())) {
+			scalers.get(system.name()).put(type.name(), value);
 		} else {
 			final Map<String, Long> inner = new HashMap<String, Long>();
 			inner.put(type.name(), value);

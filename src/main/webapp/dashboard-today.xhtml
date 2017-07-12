@@ -13,7 +13,7 @@
 </style>
 		<h:form>
 
-			<p:poll interval="10" update="auths" />
+			<p:poll interval="60" update="auths" />
 		</h:form>
 
 		<p
@@ -36,18 +36,50 @@
 			</h:panelGroup>
 
 			<p:chart type="pie"
-				model="#{dashboardGraphs.getShibChartsGetter('TOP5_TODAY')}"
+				model="#{dashboardGraphs.graphs[systemSelection.selected.name()]['TOP5_TODAY']}"
 				responsive="true"
-				rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5_TODAY')}"
-				style="width:400px;height:600px	;margin-left:auto;margin-right:auto" />
+				rendered="#{not empty dashboardGraphs.graphs[systemSelection.selected.name()]['TOP5_TODAY']}"
+				style="width:400px;height:300px	;margin-left:auto;margin-right:auto" />
 
 
 
 
 			<p:chart type="pie" responsive="true"
-				model="#{dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_TODAY')}"
-				rendered="#{not empty dashboardGraphs.getShibChartsGetter('TOP5DISTINCT_TODAY')}"
-				style="width:400px;height:600px;margin-left:auto;margin-right:auto" />
+				model="#{dashboardGraphs.graphs[systemSelection.selected.name()]['TOP5DISTINCT_TODAY']}" 
+				rendered="#{not empty dashboardGraphs.graphs[systemSelection.selected.name()]['TOP5DISTINCT_TODAY']}"
+				style="width:400px;height:300px;margin-left:auto;margin-right:auto" />
+
+
+
+			<p:dataTable var="row"
+				value="#{dashboardTables.tables[systemSelection.selected.name()]['TOP5_TODAY'].rows}"
+				style="width:80%;margin-left:auto;margin-right:auto">
+				<p:column headerText="Resource">
+					<h:outputText value="#{row.label}" />
+				</p:column>
+
+				<p:column headerText="Authentications" width="25%">
+					<h:outputText value="#{row.value}" />
+				</p:column>
+
+
+
+			</p:dataTable>
+
+			<p:dataTable var="row"
+				value="#{dashboardTables.tables[systemSelection.selected.name()]['TOP5DISTINCT_TODAY'].rows}"
+				style="width:80%;margin-left:auto;margin-right:auto">
+				<p:column headerText="Resource">
+					<h:outputText value="#{row.label}" />
+				</p:column>
+
+				<p:column headerText="Authentications" width="25%">
+					<h:outputText value="#{row.value}" />
+				</p:column>
+
+
+
+			</p:dataTable>
 		</h:panelGrid>
 
 
@@ -55,9 +87,9 @@
 
 
 		<p:chart type="line" id="auths"
-			model="#{dashboardGraphs.getShibChartsGetter('AUTHSPER_TODAY')}"
+			model="#{dashboardGraphs.graphs[systemSelection.selected.name()]['AUTHSPER_TODAY']}"
 			responsive="true"
-			rendered="#{not empty dashboardGraphs.getShibChartsGetter('AUTHSPER_TODAY')}"
+			rendered="#{not empty dashboardGraphs.graphs[systemSelection.selected.name()]['AUTHSPER_TODAY']}"
 			style="width:100%;height:400px;margin-left:auto;margin-right:auto" />
 
 

@@ -16,7 +16,10 @@
 
 
 			<div style="text-align: center; displasy: block">
-				<i class="fa fa-users fa-2x" style="" aria-hidden="true"></i> Find
+				<p:tooltip id="tooltip" for="traceIcon" value="Find the last X authentications for principal (individual user)" trackMouse="true" />
+				<h:panelGroup id="traceIcon">
+				<i class="fa fa-users fa-2x" style="" aria-hidden="true"></i> 
+				</h:panelGroup>Find
 				last
 				<p:spinner id="lastX" size="3" value="#{trace.authDepth}" />
 				authentications for

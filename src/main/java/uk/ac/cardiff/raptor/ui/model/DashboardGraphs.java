@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import uk.ac.cardiff.raptor.ui.model.SystemSelection.SYSTEM;
+
 @Component
 public class DashboardGraphs {
 
@@ -27,49 +29,24 @@ public class DashboardGraphs {
 		AUTHSPER_TODAY
 	}
 
-	private Map<CHART_TYPE, ChartModel> shibCharts = new HashMap<CHART_TYPE, ChartModel>();
+	private final Map<String, Map<String, ChartModel>> graphs = new HashMap<String, Map<String, ChartModel>>();
 
-	private Map<CHART_TYPE, ChartModel> ezproxyCharts = new HashMap<CHART_TYPE, ChartModel>();
+	public void addGraph(final CHART_TYPE type, final ChartModel value, final SYSTEM system) {
+		if (graphs.containsKey(system.name())) {
+			graphs.get(system.name()).put(type.name(), value);
+		} else {
+			final Map<String, ChartModel> inner = new HashMap<String, ChartModel>();
+			inner.put(type.name(), value);
+			graphs.put(system.name(), inner);
+		}
 
-	public ChartModel getShibChartsGetter(final String chartType) {
-		final CHART_TYPE type = CHART_TYPE.valueOf(chartType);
-		return shibCharts.get(type);
-	}
-
-	public ChartModel getExproxyChartsGetter(final String chartType) {
-		final CHART_TYPE type = CHART_TYPE.valueOf(chartType);
-		return ezproxyCharts.get(type);
-	}
-
-	/**
-	 * @return the shibCharts
-	 */
-	public final Map<CHART_TYPE, ChartModel> getShibCharts() {
-
-		return shibCharts;
 	}
 
 	/**
-	 * @param shibCharts
-	 *            the shibCharts to set
+	 * @return the graphs
 	 */
-	public final void setShibCharts(final Map<CHART_TYPE, ChartModel> shibCharts) {
-		this.shibCharts = shibCharts;
-	}
-
-	/**
-	 * @return the ezproxyCharts
-	 */
-	public final Map<CHART_TYPE, ChartModel> getEzproxyCharts() {
-		return ezproxyCharts;
-	}
-
-	/**
-	 * @param ezproxyCharts
-	 *            the ezproxyCharts to set
-	 */
-	public final void setEzproxyCharts(final Map<CHART_TYPE, ChartModel> ezproxyCharts) {
-		this.ezproxyCharts = ezproxyCharts;
+	public Map<String, Map<String, ChartModel>> getGraphs() {
+		return graphs;
 	}
 
 }
