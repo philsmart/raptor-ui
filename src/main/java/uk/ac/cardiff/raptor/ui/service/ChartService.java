@@ -40,14 +40,16 @@ public class ChartService {
 
 	}
 
-	public PieChartModel createPieModel(final GroupByResults results) {
+	public PieChartModel createPieModel(final GroupByResults results, final int diameter, final boolean showLegend) {
 		final PieChartModel model = new PieChartModel();
 		for (final GroupByResult row : results.getResults()) {
 			model.set(row.getFieldName(), row.getCount());
 		}
 		model.setShowDataLabels(true);
-		model.setDiameter(250);
-		model.setLegendPosition("s");
+		model.setDiameter(diameter);
+		if (showLegend) {
+			model.setLegendPosition("s");
+		}
 		return model;
 	}
 
