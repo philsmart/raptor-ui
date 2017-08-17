@@ -35,25 +35,25 @@
 					
 						<h:graphicImage rendered="#{systemSelection.isShibboleth()}"
 							style="height:30px; vertical-align:middle;margin-top:-5px; border-bottom:4px SOLID"
-							value="resources/images/shibboleth.png" />
+							value="resources/images/shibboleth.png" alt="shib"/>
 				
 
 					<h:commandLink action="#{systemSelection.toggleShibboleth()}">
 						<h:graphicImage
 							rendered="#{systemSelection.isShibboleth()==false}"
 							style="height:30px; vertical-align:middle;margin-top:-5px"
-							value="resources/images/shibboleth.png" />
+							value="resources/images/shibboleth.png" alt="shib" />
 					</h:commandLink>
 
 					<h:graphicImage rendered="#{systemSelection.isEzproxy()}"
 						style="margin-left:20px;height:25px; vertical-align:middle;margin-top:-5px; border-bottom:4px SOLID"
-						value="resources/images/ezproxy.png" />
+						value="resources/images/ezproxy.png" alt="ezproxy" />
 
 					<h:commandLink action="#{systemSelection.toggleEzproxy()}">
 						<h:graphicImage action="#{systemSelection.toggleShibboleth()}"
 							rendered="#{systemSelection.isEzproxy()==false}"
 							style="margin-left:20px;height:25px; vertical-align:middle;margin-top:-5px"
-							value="resources/images/ezproxy.png" />
+							value="resources/images/ezproxy.png" alt="ezproxy"/>
 					</h:commandLink>
 
 				</div>
@@ -74,23 +74,23 @@
 		<div id="subBanner">
 			<h:form style="display:inline">
 
-				<h:commandLink action="search.html">
+				<h:link outcome="search">
 					<i class="fa fa-search icon-white" aria-hidden="true"> Search</i>
-				</h:commandLink>
+				</h:link>
 				
-				<h:commandLink action="trace.html">
+				<h:link outcome="trace.html">
 					<i class="fa fa-file-text-o" aria-hidden="true"> Trace</i>
-				</h:commandLink>
+				</h:link>
 
-				<h:commandLink action="dashboard-today.html">
+				<h:link outcome="dashboard-today.html">
 					<i class="fa fa-tachometer icon-white" aria-hidden="true">
 						Today</i>
-				</h:commandLink>
+				</h:link>
 
-				<h:commandLink action="dashboard-year.html">
+				<h:link outcome="dashboard-year.html">
 					<i class="fa fa-tachometer icon-white" aria-hidden="true"> Last
 						Year</i>
-				</h:commandLink>
+				</h:link>
 			</h:form>
 
 			<h:form style="display:inline;float:right">

@@ -5,12 +5,26 @@
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:f="http://java.sun.com/jsf/core"
 	template="templates/template.xhtml">
+	
+		
+<f:metadata>
+    <f:viewParam name="term" value="#{search.term}" required="false"/>
+     <f:viewParam name="searchOn" value="#{search.searchOn}" required="false"/>
+</f:metadata>
+	
+	
 	<ui:define name="content">
+	
+
+	
 		<style type="text/css">
 .big-icon {
 	padding: 20px 20px 20px 20px
 }
 </style>
+
+
+
 		<h:form id="searchForm">
 			<div style="display: block; text-align: center">
 				<span class="big-icon"> <p:commandLink
@@ -103,13 +117,29 @@
 
 
 			</div>
+		
 
-
-
+	
+	
+			
+		
 			<p:panel id="searchTable" style="margin-top:50px"
 				rendered="#{not empty searchGraph.table}" toggleable="true"
-				header="Results Table">
+				>
+				
+				<f:facet name="header">
+					Results Table
+					<p:commandLink id="csvDownload" action="#{reportConstructorService.constructCsvReport(searchGraph)}">
+						<i class="fa fa-file-text" aria-hidden="true"></i> 
+					</p:commandLink>	
+						
+					<p:tooltip id="csvTooltip" for="csvDownload" position="top" value="Download CSV" /> 
+				</f:facet>
+				
+				
 				<h:panelGrid columns="2">
+				
+				
 					<p:dataTable var="row" value="#{searchGraph.table.rows}">
 						<p:column headerText="Search Field">
 							<h:outputText value="#{row.label}" />
@@ -141,6 +171,6 @@
 			</p:panel>
 
 
-		</h:form>
+	</h:form>
 	</ui:define>
 </ui:composition>

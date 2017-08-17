@@ -16,11 +16,13 @@
 
 
 			<div style="text-align: center; displasy: block">
-				<p:tooltip id="tooltip" for="traceIcon" value="Find the last X authentications for principal (individual user)" trackMouse="true" />
+				<p:tooltip id="tooltip" for="traceIcon"
+					value="Find the last X authentications for principal (individual user)"
+					trackMouse="true" />
 				<h:panelGroup id="traceIcon">
-				<i class="fa fa-users fa-2x" style="" aria-hidden="true"></i> 
-				</h:panelGroup>Find
-				last
+					<i class="fa fa-users fa-2x" style="" aria-hidden="true"></i>
+				</h:panelGroup>
+				Find last
 				<p:spinner id="lastX" size="3" value="#{trace.authDepth}" />
 				authentications for
 
@@ -44,9 +46,9 @@
 			</div>
 
 
-			<div style="padding-top:10px">
+			<div style="padding-top: 10px">
 
-				<p:dataTable var="row" value="#{trace.searchResult.rows}"
+				<p:dataTable var="row" value="#{trace.searchResult.rows}" tableStyle="table-layout: auto;"
 					rendered="#{not empty trace.searchResult and not empty trace.searchResult.rows}">
 
 					<p:column width="25" style="text-align:center">
@@ -82,17 +84,36 @@
 					</p:column>
 
 					<p:column headerText="Time" sortBy="#{row.eventTime}">
-						<h:outputText value="#{row.eventTime}" >
+						<h:outputText value="#{row.eventTime}">
 							<f:convertDateTime pattern="EEE dd MMM yyyy HH:mm:ss z" />
 						</h:outputText>
 					</p:column>
 
-					<p:column headerText="Principal">
-						<h:outputText value="#{row.principalName}" />
+					<p:column headerText="Principal" >
+						<h:link outcome="search" value="#{row.principalName}">
+							<f:param name="term" value="#{row.principalName}" />
+							<f:param name="searchOn" value="user" />
+						</h:link>
+
+					</p:column>
+
+					<p:column headerText="School">
+						
+						<h:link outcome="search" value="#{row.school}">
+							<f:param name="term" value="#{row.school}" />
+							<f:param name="searchOn" value="school" />
+						</h:link>
+
 					</p:column>
 
 					<p:column headerText="Resource" sortBy="#{row.resourceId}">
 						<h:outputText value="#{row.resourceId}" />
+
+					</p:column>
+					
+					<p:column headerText="Service">
+						<h:outputText value="#{row.serviceName}" />
+
 					</p:column>
 
 
@@ -100,13 +121,6 @@
 				</p:dataTable>
 
 			</div>
-
-
-
-
-
-
-
 
 
 
