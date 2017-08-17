@@ -71,14 +71,14 @@ public class DashboardService {
 			dashboardGraphs.addGraph(CHART_TYPE.TOP5DISTINCT_YEAR,
 					chartService.createPieModel(topAuthsDistinct, 250, false), system);
 
-			dashboardTables.addTable(TABLE_TYPE.TOP5DISTINCT_YEAR,
-					tableService.createGroupByTable(topAuthsDistinct), system);
+			dashboardTables.addTable(TABLE_TYPE.TOP5DISTINCT_YEAR, tableService.createGroupByTable(topAuthsDistinct),
+					system);
 
 			dashboardGraphs.addGraph(CHART_TYPE.AUTHSPER_YEAR, chartService.createLineModel(authsPerMonthYear), system);
 		}
 	}
 
-	@Scheduled(fixedDelay = 10000)
+	@Scheduled(fixedDelay = 20000)
 	public void createAuthsCount() throws DashboardException {
 
 		for (final SYSTEM system : SYSTEM.values()) {
@@ -118,8 +118,8 @@ public class DashboardService {
 			dashboardGraphs.addGraph(CHART_TYPE.TOP5DISTINCT_TODAY,
 					chartService.createPieModel(topAuthsDistinct, 250, false), system);
 
-			dashboardTables.addTable(TABLE_TYPE.TOP5DISTINCT_TODAY,
-					tableService.createGroupByTable(topAuthsDistinct), system);
+			dashboardTables.addTable(TABLE_TYPE.TOP5DISTINCT_TODAY, tableService.createGroupByTable(topAuthsDistinct),
+					system);
 
 			dashboardGraphs.addGraph(CHART_TYPE.AUTHSPER_TODAY, chartService.createLineModel(authsPerHourDay), system);
 		}

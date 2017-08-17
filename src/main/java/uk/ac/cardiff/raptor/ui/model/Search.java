@@ -63,6 +63,27 @@ public class Search {
 		initSearchType();
 	}
 
+	public void setSearchOn(final String searchOn) {
+		if (searchOn == null) {
+			return;
+		}
+		switch (searchOn) {
+		case "user":
+			toggleUser();
+			break;
+		case "school":
+			toggleSchool();
+			break;
+		case "resource":
+			toggleServiceProvider();
+			break;
+		}
+	}
+
+	public String getSearchOn() {
+		return null;
+	}
+
 	private void initSearchType() {
 		final SelectItemGroup g1 = new SelectItemGroup("Group By");
 		g1.setSelectItems(new SelectItem[] { new SelectItem("school", "School"),

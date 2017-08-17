@@ -1,14 +1,14 @@
 package uk.ac.cardiff.raptor.ui.model;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.RequestScoped;
 
 import org.primefaces.model.timeline.TimelineModel;
 
 import uk.ac.cardiff.raptor.ui.model.chart.TraceRows;
 
 @ManagedBean
-@ViewScoped
+@RequestScoped
 public class Trace {
 
 	private String search;
@@ -72,9 +72,10 @@ public class Trace {
 	}
 
 	/**
-	 * @param searchResultsTimeline the searchResultsTimeline to set
+	 * @param searchResultsTimeline
+	 *            the searchResultsTimeline to set
 	 */
-	public void setSearchResultsTimeline(TimelineModel searchResultsTimeline) {
+	public void setSearchResultsTimeline(final TimelineModel searchResultsTimeline) {
 		this.searchResultsTimeline = searchResultsTimeline;
 	}
 

@@ -9,11 +9,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import uk.ac.cardiff.raptor.ui.model.SystemSelection;
+import uk.ac.cardiff.raptor.ui.model.SystemSelection.SYSTEM;
 
 @Service
 final public class SearchToSqlMapper {
 
-	@Value("${raptorui.sql.mapper.tablename.shibboleth:SHIB_IDP_AUTH_EVENT}")
+	@Value("${raptorui.sql.mapper.tablename.shibboleth:shib_idp_auth_event}")
 	private String shibbolethTableName;
 
 	@Value("${raptorui.sql.mapper.tablename.ezproxy:ezproxy_auth_event}")
@@ -27,10 +28,12 @@ final public class SearchToSqlMapper {
 
 	/**
 	 * Returns String as opposed to optional, as there are a known fixed set of
-	 * possibilites.
+	 * Possibilities.
 	 * 
 	 * @param system
-	 * @return
+	 *            the {@link SYSTEM} to select a table name for.
+	 * @return a string that represents the database tablename that the input
+	 *         {@link SYSTEM} represents.
 	 */
 	public String mapToTableName(final SystemSelection.SYSTEM system) {
 		if (system == SystemSelection.SYSTEM.SHIBBOLETH) {

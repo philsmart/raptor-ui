@@ -248,6 +248,15 @@ public class AuthenticationRepository {
 				final String resourceId = JdbcUtils.safeGetString(rs, "resource_id");
 				row.setResourceId(resourceId);
 
+				final String school = JdbcUtils.safeGetString(rs, "school");
+				row.setSchool(school);
+
+				final String serviceId = JdbcUtils.safeGetString(rs, "service_id");
+				row.setServiceId(serviceId);
+
+				final String serviceName = JdbcUtils.safeGetString(rs, "service_name");
+				row.setServiceName(serviceName);
+
 				for (int i = 1; i <= meta.getColumnCount(); i++) {
 					row.getFields().put(meta.getColumnName(i), rs.getObject(meta.getColumnName(i)));
 

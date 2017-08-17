@@ -12,6 +12,12 @@ public class TraceRow {
 
 	private String resourceId;
 
+	private String school;
+
+	private String serviceId;
+
+	private String serviceName;
+
 	private Map<String, Object> fields;
 
 	/**
@@ -83,6 +89,50 @@ public class TraceRow {
 		builder.append(fields);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	/**
+	 * @return the school
+	 */
+	public String getSchool() {
+		return school;
+	}
+
+	/**
+	 * @param school
+	 *            the school to set
+	 */
+	public void setSchool(final String school) {
+		this.school = school;
+	}
+
+	/**
+	 * @return the serviceId
+	 */
+	public String getServiceId() {
+		return serviceId;
+	}
+
+	/**
+	 * @param serviceId
+	 *            the serviceId to set
+	 */
+	public void setServiceId(final String serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	/**
+	 * @return the serviceName
+	 */
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	/**
+	 * @param serviceName the serviceName to set
+	 */
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
 
 }

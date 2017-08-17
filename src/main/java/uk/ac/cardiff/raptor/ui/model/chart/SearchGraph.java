@@ -1,14 +1,14 @@
 package uk.ac.cardiff.raptor.ui.model.chart;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 
 import org.primefaces.model.chart.ChartModel;
 import org.primefaces.model.chart.HorizontalBarChartModel;
 import org.primefaces.model.chart.PieChartModel;
 
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class SearchGraph {
 
 	/**
@@ -73,9 +73,10 @@ public class SearchGraph {
 	}
 
 	/**
-	 * @param pie the pie to set
+	 * @param pie
+	 *            the pie to set
 	 */
-	public void setPie(PieChartModel pie) {
+	public void setPie(final PieChartModel pie) {
 		this.pie = pie;
 	}
 
