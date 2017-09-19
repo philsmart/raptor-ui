@@ -1,0 +1,83 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+
+
+<f:view contentType="text/html" id="fview">
+
+	<style type="text/css">
+</style>
+
+	<script src="https://use.fontawesome.com/595d117f8e.js" />
+
+	<h:head>
+
+
+		<h:outputStylesheet name="raptor-style.css" library="css" />
+		<h:outputStylesheet name="raptor-login-style.css" library="css" />
+		<title>Raptor UI</title>
+
+	</h:head>
+
+
+	<h:body>
+
+
+		<div style="margin-top: 30px">
+			<form class="form" name='f' action='/login' method='POST'>
+				<table style="width: 100%">
+					<tr style="text-align: center">
+						<td><h:graphicImage width="50px"
+								value="../resources/images/raptor-large.png" alt="raptor-logo" /></td>
+					</tr>
+					<tr style="text-align: center">
+						<td style="padding-bottom: 10px">Welcome to the Raptor UI</td>
+					</tr>
+					<tr>
+
+						<td><input type='text' placeholder="username" name='username'
+							value='' /></td>
+					</tr>
+					<tr>
+
+						<td><input type='password' placeholder="password"
+							name='password' /></td>
+					</tr>
+					<tr>
+						<td style="text-align:center;color:darkred;font-weight:bold"><h:outputText rendered="#{param.error!=null}" value="Login Failed"/></td>
+					</tr>
+					<tr>
+						<td colspan='2'><button>LOGIN</button></td>
+					</tr>
+					<tr>
+						<td><h:outputText rendered="#{param.error}" value="error" /></td>
+					</tr>
+					<tr>
+						<td colspan='2' style="padding-top: 20"><a
+							href="saml/login"
+							style="display: block" class="inst_button">Institution Login</a> <!-- ?idp=https%3A%2F%2Fidp.cardiff.ac.uk%2Fshibboleth -->
+						</td>
+
+					</tr>
+				</table>
+
+
+			</form>
+		</div>
+
+		<div
+			style="padding: 20px; margin-top: 20px; margin-left: auto; margin-right: auto; width: 30%; text-align: center">
+
+		</div>
+
+		<div class="center" style="width: 30%"></div>
+
+		<div></div>
+
+
+	</h:body>
+</f:view>
+</html>

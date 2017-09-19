@@ -20,7 +20,7 @@ import uk.ac.cardiff.raptor.ui.utils.DateUtils;
 @Component
 public class DashboardService {
 
-	private static final Logger log = LoggerFactory.getLogger(SearchService.class);
+	private static final Logger log = LoggerFactory.getLogger(DashboardService.class);
 
 	@Inject
 	private AuthenticationRepository authRepository;
@@ -52,7 +52,7 @@ public class DashboardService {
 
 			final String tableName = sqlMapper.mapToTableName(system);
 
-			log.debug("Searching using TableName [{}]", tableName);
+			log.trace("Searching using TableName [{}]", tableName);
 
 			final GroupByResults topAuthsYear = authRepository
 					.findTopServiceProvidersByAuthentications(DateUtils.getStartOfYear(), tableName);
@@ -99,7 +99,7 @@ public class DashboardService {
 		for (final SYSTEM system : SYSTEM.values()) {
 
 			final String tableName = sqlMapper.mapToTableName(system);
-			log.debug("Searching using TableName [{}]", tableName);
+			log.trace("Searching using TableName [{}]", tableName);
 
 			final GroupByResults topAuthsToday = authRepository
 					.findTopServiceProvidersByAuthentications(DateUtils.getStartOfToday(), tableName);

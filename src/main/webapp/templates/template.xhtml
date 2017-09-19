@@ -25,7 +25,8 @@
 
 		<div id="banner">
 			<div style="text-align: left; display: inline; float: left">
-				<i class="fa fa-bicycle" /> <span style="font-size: small">#{msg['institution']}
+				<h:graphicImage width="20px"
+								value="../resources/images/raptor-large-logo.png" alt="raptor-logo" /> <span style="font-size: small">#{msg['institution']}
 					Raptor</span>
 			</div>
 			<h:form>
@@ -35,25 +36,25 @@
 					
 						<h:graphicImage rendered="#{systemSelection.isShibboleth()}"
 							style="height:30px; vertical-align:middle;margin-top:-5px; border-bottom:4px SOLID"
-							value="resources/images/shibboleth.png" alt="shib"/>
+							value="../resources/images/shibboleth.png" alt="shib"/>
 				
 
 					<h:commandLink action="#{systemSelection.toggleShibboleth()}">
 						<h:graphicImage
 							rendered="#{systemSelection.isShibboleth()==false}"
 							style="height:30px; vertical-align:middle;margin-top:-5px"
-							value="resources/images/shibboleth.png" alt="shib" />
+							value="../resources/images/shibboleth.png" alt="shib" />
 					</h:commandLink>
 
 					<h:graphicImage rendered="#{systemSelection.isEzproxy()}"
 						style="margin-left:20px;height:25px; vertical-align:middle;margin-top:-5px; border-bottom:4px SOLID"
-						value="resources/images/ezproxy.png" alt="ezproxy" />
+						value="../resources/images/ezproxy.png" alt="ezproxy" />
 
 					<h:commandLink action="#{systemSelection.toggleEzproxy()}">
 						<h:graphicImage action="#{systemSelection.toggleShibboleth()}"
 							rendered="#{systemSelection.isEzproxy()==false}"
 							style="margin-left:20px;height:25px; vertical-align:middle;margin-top:-5px"
-							value="resources/images/ezproxy.png" alt="ezproxy"/>
+							value="../resources/images/ezproxy.png" alt="ezproxy"/>
 					</h:commandLink>
 
 				</div>
@@ -65,9 +66,14 @@
 				<span style="border:1px SOLID;background:#bcc7cf;color:black"><h:outputText value="#{dashboardScalers.scalers[systemSelection.selected.name()]['AUTHS_TODAY']}"/></span>
 				
 
-				<i class="fa fa-user" /> <span style="font-size: small"><h:outputText
-						value="#{userContext.username}" /> [<h:outputText
-						value="#{userContext.roles}" />] </span>
+				<h:outputLink rendered="#{request.isUserInRole('ADMIN')}" id="adminIcon" value="#" style="margin-left:10px;margin-right:10px;color:red"> 
+				<i class="fa fa-user"/></h:outputLink>
+				<h:outputLink rendered="#{request.isUserInRole('USER')}" id="userIcon" value="#" style="margin-left:10px;margin-right:10px"> 
+				<i class="fa fa-user"/></h:outputLink> <span style="font-size: small">
+				<p:tooltip id="userInfoTooltip" for="userIcon" value="User [#{request.userPrincipal.name}] : Role #{request.userPrincipal.authorities}" position="left" />
+				<p:tooltip id="adminInfoTooltip" for="adminIcon" value="User [#{request.userPrincipal.name}] : Role #{request.userPrincipal.authorities}" position="left" />
+				
+				</span>
 
 			</div>
 		</div>
@@ -94,7 +100,7 @@
 			</h:form>
 
 			<h:form style="display:inline;float:right">
-				<a href="logout"><i class="fa fa-sign-out" /></a>
+				<a href="/logout"><i class="fa fa-sign-out" /></a>
 
 			</h:form>
 		</div>
@@ -122,7 +128,7 @@
 		<p:dialog modal="true" widgetVar="statusDialog" showHeader="false"
 			draggable="false" closable="false" resizable="false" visible="false"
 			position="center" maximizable="false" minimizable="false">
-			<p:graphicImage value="resources/images/ajax-loader.gif" />
+			<p:graphicImage value="../resources/images/ajax-loader.gif" />
 		</p:dialog>
 	</h:body>
 

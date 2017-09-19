@@ -4,7 +4,7 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:f="http://java.sun.com/jsf/core"
-	template="templates/template.xhtml">
+	template="../templates/template.xhtml">
 	
 		
 <f:metadata>
@@ -127,13 +127,17 @@
 				rendered="#{not empty searchGraph.table}" toggleable="true"
 				>
 				
-				<f:facet name="header">
-					Results Table
-					<p:commandLink id="csvDownload" action="#{reportConstructorService.constructCsvReport(searchGraph)}">
+				<div>
+				<p:commandLink id="csvDownload" action="#{reportConstructorService.constructCsvReport(searchGraph)}">
 						<i class="fa fa-file-text" aria-hidden="true"></i> 
 					</p:commandLink>	
 						
 					<p:tooltip id="csvTooltip" for="csvDownload" position="top" value="Download CSV" /> 
+				</div>
+				
+				<f:facet name="header">
+					Results Table
+					
 				</f:facet>
 				
 				

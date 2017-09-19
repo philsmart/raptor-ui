@@ -1,0 +1,87 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+
+
+<f:view contentType="text/html" id="fview">
+
+	<script src="https://use.fontawesome.com/595d117f8e.js" />
+
+	<h:head>
+		<h:outputStylesheet name="raptor-style.css" library="css" />
+		<h:outputStylesheet name="raptor-login-style.css" library="css" />
+		<title>Raptor UI Saml Auth</title>
+
+	</h:head>
+
+
+	<h:body>
+
+		
+		<div style="margin-top: 30px">
+			<h:form class="form">
+
+				<table style="width: 100%">
+					<tr style="text-align: center">
+						<td><h:graphicImage width="50px"
+								value="../resources/images/raptor-large.png" alt="raptor-logo" /></td>
+					</tr>
+					<tr>
+						<td style="text-align: center; padding-bottom: 10px; font-size:larger">Please
+							select your institution</td>
+					</tr>
+					
+					<tr>
+						<td style="text-align: center; padding-bottom: 10px">
+						<h:commandLink  action="#{discoIdpSelection.doRememberedDiscoLoginRedirect}">
+							<f:param name="idpDiscoReturnParam"
+									value="${idpDiscoReturnParam}" />
+							<h:graphicImage style="display:block;margin-left:auto;margin-right:auto" rendered="#{not empty discoIdpSelection.rememberedIdp}" value="#{metadataHelperService.getMduiLogo(discoIdpSelection.rememberedIdp).orElse('')}" 
+							alt="no-image" width="100px"/>
+						</h:commandLink>
+						<h:outputText value="#{metadataHelperService.getOrgDisplayName(discoIdpSelection.rememberedIdp).orElse('UnknownOrg')}"/>
+						</td>
+					</tr>
+
+					<tr>
+						<td><p:autoComplete pt:placeholder="search for Identity Provider"  id="idpSelection" style="width:100%"  var="idp"
+								minQueryLength="3" value="#{discoIdpSelection.selectedIdp}" itemValue="#{idp.entityId}" itemLabel="#{idp.orgName}"
+								completeMethod="#{autoCompleteIdpSelection.completeIdentityProvider}" 
+								effect="fade">
+								<p:column>
+								<h:graphicImage value="#{idp.logoUrl}" alt="no-image" width="30px"/>
+								
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{idp.orgName}" />
+								</p:column>
+
+							</p:autoComplete><h:messages style="color:red"/></td>
+					</tr>
+
+
+
+					<tr>
+						<td><h:commandLink style="background-color:green"
+								value="LOGIN" action="#{discoIdpSelection.doDiscoLoginRedirect}"
+								class="inst_button">
+								<f:param name="idpDiscoReturnParam"
+									value="${idpDiscoReturnParam}" />
+							</h:commandLink></td>
+					</tr>
+
+
+				</table>
+			</h:form>
+
+
+		</div>
+
+	</h:body>
+</f:view>
+</html>

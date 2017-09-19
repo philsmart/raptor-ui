@@ -51,7 +51,7 @@ public class SearchService {
 
 		final String tableName = sqlMapper.mapToTableName(system)
 				.orElseThrow(() -> new SearchException("No system set, one of Shibboleth or Ezproxy expected"));
-		log.debug("Searching using TableName [{}]", tableName);
+		log.trace("Searching using TableName [{}]", tableName);
 
 		final GroupByResults results = selectRunSearch(search, tableName);
 

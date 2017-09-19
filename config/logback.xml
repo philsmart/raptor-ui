@@ -79,6 +79,27 @@
 	</root>
 
 	<logger name="org.springframework.web" level="INFO" additivity="true" />
+	
+	<logger name="org.opensaml" level="INFO" additivity="true" />
+	
+
+	<logger name="org.opensaml.saml2.metadata" level="INFO" additivity="true"/>
+	
+	<logger name="org.springframework.security.saml.log" level="DEBUG" additivity="true"/>
+	
+	
+	<!-- this logger logs the filter called in response to IdP AuthN -->
+	<logger name="org.springframework.security.saml.SAMLProcessingFilter" level="DEBUG" additivity="true"/>
+	
+	<!-- this logger logs the entry point on forced SAML login /saml/login or from failed authn (if configured) -->
+	<logger name="org.springframework.security.saml.SAMLEntryPoint" level="DEBUG" additivity="true"/>
+	
+	
+	 
+	 <logger name="org.springframework.web.filter" level="DEBUG" additivity="true"/>
+
+	
+	<logger name="org.opensaml.saml2.metadata.provider.AbstractReloadingMetadataProvider" level="DEBUG" additivity="true"/>
 
 
 	<logger name="org.apache.myfaces.config" level="TRACE" additivity="true" />
@@ -89,7 +110,7 @@
 	</logger>
 
 
-	<logger name="uk.ac.cardiff" level="trace" additivity="false">
+	<logger name="uk.ac.cardiff" level="debug" additivity="false">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</logger>

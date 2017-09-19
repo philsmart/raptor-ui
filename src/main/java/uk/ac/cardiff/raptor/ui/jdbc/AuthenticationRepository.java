@@ -82,7 +82,7 @@ public class AuthenticationRepository {
 
 		String tableAddedSql = getUserSql.replace("$tableName", system);
 		tableAddedSql = tableAddedSql.replace("$groupBy", search.getType());
-		log.debug("Query is now [{}]", tableAddedSql);
+		log.trace("Query is now [{}]", tableAddedSql);
 		try {
 			final GroupByResults results = jdbcTemplate.query(tableAddedSql,
 					new Object[] { search.getTerm(), search.getFrom(), search.getTo() }, new GroupByResultsExtractor());
@@ -99,7 +99,7 @@ public class AuthenticationRepository {
 	public GroupByResults findSchoolAuthentications(final Search search, final String system) {
 		String tableAddedSql = getSchoolSql.replace("$tableName", system);
 		tableAddedSql = tableAddedSql.replace("$groupBy", search.getType());
-		log.debug("Query is now [{}]", tableAddedSql);
+		log.trace("Query is now [{}]", tableAddedSql);
 		try {
 			final GroupByResults results = jdbcTemplate.query(tableAddedSql,
 					new Object[] { search.getTerm(), search.getFrom(), search.getTo() }, new GroupByResultsExtractor());
@@ -115,7 +115,7 @@ public class AuthenticationRepository {
 	public GroupByResults findServiceProviderAuthentications(final Search search, final String system) {
 		String tableAddedSql = getServiceProviderSql.replace("$tableName", system);
 		tableAddedSql = tableAddedSql.replace("$groupBy", search.getType());
-		log.debug("Query is now [{}]", tableAddedSql);
+		log.trace("Query is now [{}]", tableAddedSql);
 		try {
 			final GroupByResults results = jdbcTemplate.query(tableAddedSql,
 					new Object[] { search.getTerm(), search.getFrom(), search.getTo() }, new GroupByResultsExtractor());
@@ -130,7 +130,7 @@ public class AuthenticationRepository {
 	@Transactional(readOnly = true)
 	public GroupByResults findTopServiceProvidersByAuthentications(final Date from, final String system) {
 		final String tableAddedSql = topServiceProvidersByAuthenticationsSql.replace("$tableName", system);
-		log.debug("Query is now [{}]", tableAddedSql);
+		log.trace("Query is now [{}]", tableAddedSql);
 		try {
 			final GroupByResults results = jdbcTemplate.query(tableAddedSql, new Object[] { from },
 					new GroupByResultsExtractor());
@@ -147,7 +147,7 @@ public class AuthenticationRepository {
 			final String period) {
 		final String tableAddedSql = authenticationsPerPeriod.replace("$tableName", system);
 		final String periodAddedSql = tableAddedSql.replace("$period", period);
-		log.debug("Query is now [{}]", periodAddedSql);
+		log.trace("Query is now [{}]", periodAddedSql);
 		try {
 			final GroupByResults results = jdbcTemplate.query(periodAddedSql, new Object[] { from },
 					new GroupByResultsExtractor());
@@ -162,7 +162,7 @@ public class AuthenticationRepository {
 	@Transactional(readOnly = true)
 	public GroupByResults findTopServiceProvidersByAuthenticationsDistinctUsers(final Date from, final String system) {
 		final String tableAddedSql = topServiceProvidersByAuthenticationsDistinctUsersSql.replace("$tableName", system);
-		log.debug("Query is now [{}]", tableAddedSql);
+		log.trace("Query is now [{}]", tableAddedSql);
 		try {
 			final GroupByResults results = jdbcTemplate.query(tableAddedSql, new Object[] { from },
 					new GroupByResultsExtractor());
@@ -177,7 +177,7 @@ public class AuthenticationRepository {
 	@Transactional(readOnly = true)
 	public Long findAllAuthsToServiceProvider(final String system, final Date from) {
 		final String tableAddedSql = authCount.replace("$tableName", system);
-		log.debug("Query is now [{}]", tableAddedSql);
+		log.trace("Query is now [{}]", tableAddedSql);
 		try {
 			final Long count = jdbcTemplate.queryForObject(tableAddedSql, new Object[] { from }, Long.class);
 
@@ -192,7 +192,7 @@ public class AuthenticationRepository {
 	public TraceRows findLastAuths(final Trace trace, final String system) {
 		String tableAddedSql = previousAuths.replace("$tableName", system);
 		tableAddedSql = tableAddedSql.replace("$limit", Integer.toString(trace.getAuthDepth()));
-		log.debug("Query is now [{}]", tableAddedSql);
+		log.trace("Query is now [{}]", tableAddedSql);
 		try {
 			final TraceRows results = jdbcTemplate.query(tableAddedSql, new Object[] { trace.getSearch() },
 					new TraceRowsResultsExtractor());
