@@ -21,8 +21,12 @@ import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.parse.ParserPool;
 import org.opensaml.xml.parse.StaticBasicParserPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -87,7 +91,10 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
+@ConfigurationProperties(prefix = "saml.metadata")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+	private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
 	@Value(value = "${saml.enabled}")
 	private boolean samlEnabled;
@@ -107,7 +114,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Value(value = "${saml.keystore.alias.password}")
 	private String aliasPassword;
 
+	private List<MetadataProviderInfo> providers;
+
 	private Timer backgroundTaskTimer;
+
 	private MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager;
 
 	@Inject
@@ -115,15 +125,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@PostConstruct
 	public void init() {
-		this.backgroundTaskTimer = new Timer(true);
-		this.multiThreadedHttpConnectionManager = new MultiThreadedHttpConnectionManager();
+		if (samlEnabled) {
+			this.backgroundTaskTimer = new Timer(true);
+			this.multiThreadedHttpConnectionManager = new MultiThreadedHttpConnectionManager();
+		}
 	}
 
 	@PreDestroy
 	public void destroy() {
-		this.backgroundTaskTimer.purge();
-		this.backgroundTaskTimer.cancel();
-		this.multiThreadedHttpConnectionManager.shutdown();
+		if (samlEnabled) {
+			this.backgroundTaskTimer.purge();
+			this.backgroundTaskTimer.cancel();
+			this.multiThreadedHttpConnectionManager.shutdown();
+		}
 	}
 
 	/**
@@ -143,24 +157,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 */
 		// http.httpBasic().authenticationEntryPoint(samlEntryPoint());
 
-		/*
-		 * these filters are already auto configured when the @bean method
-		 * creates them, this just changes the order in which they are placed in
-		 * the chain.
-		 */
-		// http.addFilterBefore(metadataGeneratorFilter(),
-		// ChannelProcessingFilter.class);// .addFilterAfter(samlFilter(),
-		// BasicAuthenticationFilter.class);
-
-		// http.authorizeRequests().antMatchers("/ui/**").permitAll().antMatchers("/error").permitAll()
-		// .antMatchers("/saml/**").permitAll().anyRequest().authenticated();
-		// http.authorizeRequests().antMatchers("/ui/**").authenticated().and()
-		// .authenticationProvider(new
-		// SimpleAuthenticationProvider()).httpBasic();
-
-		// http.logout().logoutSuccessUrl("/");
-
-		// http.httpBasic().authenticationEntryPoint(samlEntryPoint());
 		http.csrf().disable();
 
 		http.authorizeRequests().antMatchers("/resources/**").permitAll().antMatchers("/javax.faces.resource/**")
@@ -184,11 +180,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(samlAuthenticationProvider());
+		log.info("Are we creating a SAML Authentication Provider [{}]", samlEnabled ? "yes" : "no");
+		if (samlEnabled) {
+			auth.authenticationProvider(samlAuthenticationProvider());
+		}
 
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SAMLAuthenticationProvider samlAuthenticationProvider() {
 		final SAMLAuthenticationProvider samlAuthenticationProvider = new SAMLAuthenticationProvider();
 		samlAuthenticationProvider.setUserDetails(samlUserDetails);
@@ -196,41 +196,50 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return samlAuthenticationProvider;
 	}
 
-	@Bean
 	public HttpClient httpClient() {
 		return new HttpClient(this.multiThreadedHttpConnectionManager);
 	}
 
 	// XML parser pool needed for OpenSAML parsing
 	@Bean(initMethod = "initialize")
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public StaticBasicParserPool parserPool() {
 		return new StaticBasicParserPool();
 	}
 
 	@Bean(name = "parserPoolHolder")
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public ParserPoolHolder parserPoolHolder() {
 		return new ParserPoolHolder();
 	}
 
 	/**
-	 * Make a bean of this, can be used by other aspects of raptor-ui. Could be
-	 * placed in a more appropriate class.
+	 * Create a {@link HTTPMetadataProvider} from the input parameters.
 	 * 
-	 * @return
+	 * @param metadataUrl
+	 *            the URL of the metadata
+	 * @param sigAliasName
+	 *            the alias of the signature used to validate the downloaded
+	 *            metadata. This is taken from the keystore used to configure
+	 *            this saml SP.
+	 * @param trustChecks
+	 *            if true, performs signature validation.
+	 * @return and {@link ExtendedMetadataDelegate}
 	 * @throws MetadataProviderException
 	 */
-	@Bean
-	@Qualifier("ukfed-meta")
-	public ExtendedMetadataDelegate ukfedMetadataProvider() throws MetadataProviderException {
-		final String ukfedMetadataURL = "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml";
+	// TODO this may not work, as each provider is going to share the timer and
+	// the httpClient?
+	public ExtendedMetadataDelegate createMetadataProvider(final String metadataUrl, final String sigAliasName,
+			final boolean trustChecks) throws MetadataProviderException {
+
 		final HTTPMetadataProvider httpMetadataProvider = new HTTPMetadataProvider(this.backgroundTaskTimer,
-				httpClient(), ukfedMetadataURL);
+				httpClient(), metadataUrl);
 		httpMetadataProvider.setParserPool(parserPool());
 		final ExtendedMetadataDelegate extendedMetadataDelegate = new ExtendedMetadataDelegate(httpMetadataProvider,
 				extendedMetadata());
-		extendedMetadataDelegate.setMetadataTrustCheck(true);
-		extendedMetadataDelegate.setMetadataRequireSignature(true);
-		extendedMetadataDelegate.setMetadataTrustedKeys(new HashSet<String>(Arrays.asList("ukfed-sig")));
+		extendedMetadataDelegate.setMetadataTrustCheck(trustChecks);
+		extendedMetadataDelegate.setMetadataRequireSignature(trustChecks);
+		extendedMetadataDelegate.setMetadataTrustedKeys(new HashSet<String>(Arrays.asList(sigAliasName)));
 
 		backgroundTaskTimer.purge();
 		return extendedMetadataDelegate;
@@ -238,57 +247,72 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	@Qualifier("metadata")
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public CachingMetadataManager metadata() throws MetadataProviderException {
-		final List<MetadataProvider> providers = new ArrayList<MetadataProvider>();
-		providers.add(ukfedMetadataProvider());
-		final CachingMetadataManager man = new CachingMetadataManager(providers);
-		// man.setDefaultIDP("https://idp.cardiff.ac.uk/shibboleth");
+		log.info("Configuring MetadataProviders! " + providers);
+
+		final List<MetadataProvider> metaProviders = new ArrayList<MetadataProvider>();
+		for (final MetadataProviderInfo provInfo : providers) {
+
+			metaProviders.add(createMetadataProvider(provInfo.getMetadataURL(), provInfo.getKeystoreSignatureAlias(),
+					provInfo.isDoTrustCheck()));
+
+		}
+		final CachingMetadataManager man = new CachingMetadataManager(metaProviders);
 		return man;
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SAMLDefaultLogger samlLogger() {
 		return new SAMLDefaultLogger();
 	}
 
 	// Provider of default SAML Context
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SAMLContextProviderImpl contextProvider() {
 		return new SAMLContextProviderImpl();
 	}
 
 	// Initialization of OpenSAML library
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public static SAMLBootstrap sAMLBootstrap() {
 		return new SAMLBootstrap();
 	}
 
 	// SAML 2.0 WebSSO Assertion Consumer
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public WebSSOProfileConsumer webSSOprofileConsumer() {
 		return new WebSSOProfileConsumerImpl();
 	}
 
 	// SAML 2.0 Holder-of-Key WebSSO Assertion Consumer
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public WebSSOProfileConsumerHoKImpl hokWebSSOprofileConsumer() {
 		return new WebSSOProfileConsumerHoKImpl();
 	}
 
 	// SAML 2.0 Web SSO profile
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public WebSSOProfile webSSOprofile() {
 		return new WebSSOProfileImpl();
 	}
 
 	// SAML 2.0 Holder-of-Key Web SSO profile
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public WebSSOProfileConsumerHoKImpl hokWebSSOProfile() {
 		return new WebSSOProfileConsumerHoKImpl();
 	}
 
 	// SAML 2.0 ECP profile
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public WebSSOProfileECPImpl ecpprofile() {
 		return new WebSSOProfileECPImpl();
 	}
@@ -300,6 +324,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @return
 	 */
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public MetadataGenerator metadataGenerator() {
 		final MetadataGenerator metadataGenerator = new MetadataGenerator();
 		metadataGenerator.setEntityId(entityId);
@@ -312,6 +337,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	// Setup advanced info about metadata
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public ExtendedMetadata extendedMetadata() {
 		final ExtendedMetadata extendedMetadata = new ExtendedMetadata();
 		extendedMetadata.setIdpDiscoveryEnabled(true);
@@ -322,6 +348,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public KeyManager keyManager() {
 		final DefaultResourceLoader loader = new DefaultResourceLoader();
 		final Resource storeFile = loader.getResource(keystore);
@@ -332,11 +359,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public MetadataGeneratorFilter metadataGeneratorFilter() {
 		return new MetadataGeneratorFilter(metadataGenerator());
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SAMLWebSSOHoKProcessingFilter samlWebSSOHoKProcessingFilter() throws Exception {
 		final SAMLWebSSOHoKProcessingFilter samlWebSSOHoKProcessingFilter = new SAMLWebSSOHoKProcessingFilter();
 		samlWebSSOHoKProcessingFilter.setAuthenticationSuccessHandler(successRedirectHandler());
@@ -346,6 +375,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SAMLProcessorImpl processor() {
 		final Collection<SAMLBinding> bindings = new ArrayList<SAMLBinding>();
 		bindings.add(httpRedirectDeflateBinding());
@@ -357,16 +387,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SingleLogoutProfile logoutprofile() {
 		return new SingleLogoutProfileImpl();
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public HTTPArtifactBinding artifactBinding(final ParserPool parserPool, final VelocityEngine velocityEngine) {
 		return new HTTPArtifactBinding(parserPool, velocityEngine, artifactResolutionProfile());
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SAMLDiscovery samlIDPDiscovery() {
 		final SAMLDiscovery idpDiscovery = new SAMLDiscovery();
 		idpDiscovery.setIdpSelectionPath("/saml/idpSelection");
@@ -374,17 +407,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SAMLLogoutProcessingFilter samlLogoutProcessingFilter() {
 		return new SAMLLogoutProcessingFilter(successLogoutHandler(), logoutHandler());
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SAMLLogoutFilter samlLogoutFilter() {
 		return new SAMLLogoutFilter(successLogoutHandler(), new LogoutHandler[] { logoutHandler() },
 				new LogoutHandler[] { logoutHandler() });
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SecurityContextLogoutHandler logoutHandler() {
 		final SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
 		logoutHandler.setInvalidateHttpSession(true);
@@ -393,6 +429,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SimpleUrlLogoutSuccessHandler successLogoutHandler() {
 		final SimpleUrlLogoutSuccessHandler successLogoutHandler = new SimpleUrlLogoutSuccessHandler();
 		successLogoutHandler.setDefaultTargetUrl("/");
@@ -402,6 +439,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	// Entry point to initialize authentication, default values taken from
 	// properties file
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SAMLEntryPoint samlEntryPoint() {
 		final SAMLEntryPoint samlEntryPoint = new SAMLEntryPoint();
 		samlEntryPoint.setDefaultProfileOptions(defaultWebSSOProfileOptions());
@@ -417,6 +455,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @throws Exception
 	 */
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SAMLProcessingFilter samlWebSSOProcessingFilter() throws Exception {
 		final SAMLProcessingFilter samlWebSSOProcessingFilter = new SAMLProcessingFilter();
 		samlWebSSOProcessingFilter.setAuthenticationManager(authenticationManager());
@@ -426,6 +465,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler() {
 		final SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler = new SavedRequestAwareAuthenticationSuccessHandler();
 		successRedirectHandler.setDefaultTargetUrl("/ui/search.xhtml");
@@ -433,6 +473,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public SimpleUrlAuthenticationFailureHandler authenticationFailureHandler() {
 		final SimpleUrlAuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
 		failureHandler.setUseForward(true);
@@ -448,32 +489,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public HTTPSOAP11Binding soapBinding() {
 		return new HTTPSOAP11Binding(parserPool());
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public HTTPPostBinding httpPostBinding() {
 		return new HTTPPostBinding(parserPool(), velocityEngine());
 	}
 
 	// Initialization of the velocity engine
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public VelocityEngine velocityEngine() {
 		return VelocityFactory.getEngine();
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public HTTPRedirectDeflateBinding httpRedirectDeflateBinding() {
 		return new HTTPRedirectDeflateBinding(parserPool());
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public HTTPSOAP11Binding httpSOAP11Binding() {
 		return new HTTPSOAP11Binding(parserPool());
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public HTTPPAOS11Binding httpPAOS11Binding() {
 		return new HTTPPAOS11Binding(parserPool());
 	}
@@ -494,15 +541,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	// The filter is waiting for connections on URL suffixed with filterSuffix
 	// and presents SP metadata there
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public MetadataDisplayFilter metadataDisplayFilter() {
 		return new MetadataDisplayFilter();
 	}
 
 	@Bean
+	@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 	public WebSSOProfileOptions defaultWebSSOProfileOptions() {
 		final WebSSOProfileOptions webSSOProfileOptions = new WebSSOProfileOptions();
 		webSSOProfileOptions.setIncludeScoping(false);
 		return webSSOProfileOptions;
+	}
+
+	/**
+	 * @return the providers
+	 */
+	public List<MetadataProviderInfo> getProviders() {
+		return providers;
+	}
+
+	/**
+	 * @param providers
+	 *            the providers to set
+	 */
+	public void setProviders(final List<MetadataProviderInfo> providers) {
+		this.providers = providers;
+	}
+
+	/**
+	 * @return the samlEnabled
+	 */
+	public boolean isSamlEnabled() {
+		return samlEnabled;
 	}
 
 }

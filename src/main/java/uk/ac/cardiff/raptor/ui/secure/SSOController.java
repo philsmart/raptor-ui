@@ -10,6 +10,7 @@ import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml.metadata.MetadataManager;
@@ -24,6 +25,7 @@ import uk.ac.cardiff.raptor.ui.service.MetadataHelperService;
 
 @Controller
 @RequestMapping("/saml")
+@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 public class SSOController {
 
 	// Logger

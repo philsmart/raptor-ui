@@ -26,18 +26,18 @@
 		<div id="banner">
 			<div style="text-align: left; display: inline; float: left">
 				<h:graphicImage width="20px"
-								value="../resources/images/raptor-large-logo.png" alt="raptor-logo" /> <span style="font-size: small">#{msg['institution']}
-					Raptor</span>
+					value="../resources/images/raptor-large-logo.png" alt="raptor-logo" />
+				<span style="font-size: small">#{msg['institution']} Raptor</span>
 			</div>
 			<h:form>
 				<div
 					style="text-align: center; display: inline; margin-left: -200px">
 
-					
-						<h:graphicImage rendered="#{systemSelection.isShibboleth()}"
-							style="height:30px; vertical-align:middle;margin-top:-5px; border-bottom:4px SOLID"
-							value="../resources/images/shibboleth.png" alt="shib"/>
-				
+
+					<!-- <h:graphicImage rendered="#{systemSelection.isShibboleth()}"
+						style="height:30px; vertical-align:middle;margin-top:-5px; border-bottom:4px SOLID"
+						value="../resources/images/shibboleth.png" alt="shib" />
+
 
 					<h:commandLink action="#{systemSelection.toggleShibboleth()}">
 						<h:graphicImage
@@ -54,25 +54,55 @@
 						<h:graphicImage action="#{systemSelection.toggleShibboleth()}"
 							rendered="#{systemSelection.isEzproxy()==false}"
 							style="margin-left:20px;height:25px; vertical-align:middle;margin-top:-5px"
-							value="../resources/images/ezproxy.png" alt="ezproxy"/>
-					</h:commandLink>
+							value="../resources/images/ezproxy.png" alt="ezproxy" />
+					</h:commandLink> -->
+
+					<p:commandButton id="systemButton" value="#{systemSelection.selected}" type="button" style="background:grey;color:white;top:-5px"
+						icon="fa fa-bars" />
+					<p:menu overlay="true" trigger="systemButton" my="left top"  
+						at="left bottom">
+					
+							<p:menuitem value="Shibboleth" actionListener="#{menuView.save}"
+								 icon="fa fa-dot-circle-o"  />
+							<p:menuitem value="Ezproxy" actionListener="#{menuView.update}"
+								 icon="fa fa-dot-circle-o" />
+						
+					</p:menu>
+
+
+					
+
 
 				</div>
 			</h:form>
-			<div style="text-align: center; position: fixed; right: 0px;top:10px">
-			
-			
-				Today's Auths 
-				<span style="border:1px SOLID;background:#bcc7cf;color:black"><h:outputText value="#{dashboardScalers.scalers[systemSelection.selected.name()]['AUTHS_TODAY']}"/></span>
-				
+			<div
+				style="text-align: center; position: fixed; right: 0px; top: 10px">
 
-				<h:outputLink rendered="#{request.isUserInRole('ADMIN')}" id="adminIcon" value="#" style="margin-left:10px;margin-right:10px;color:red"> 
-				<i class="fa fa-user"/></h:outputLink>
-				<h:outputLink rendered="#{request.isUserInRole('USER')}" id="userIcon" value="#" style="margin-left:10px;margin-right:10px"> 
-				<i class="fa fa-user"/></h:outputLink> <span style="font-size: small">
-				<p:tooltip id="userInfoTooltip" for="userIcon" value="User [#{request.userPrincipal.name}] : Role #{request.userPrincipal.authorities}" position="left" />
-				<p:tooltip id="adminInfoTooltip" for="adminIcon" value="User [#{request.userPrincipal.name}] : Role #{request.userPrincipal.authorities}" position="left" />
-				
+
+				Today's Auths <span
+					style="border: 1px SOLID; background: #808080; color: white"><h:outputText
+						value="#{dashboardScalers.scalers[systemSelection.selected.name()]['AUTHS_TODAY']}">
+						<f:convertNumber pattern="###,###,###" />
+					</h:outputText> </span>
+
+
+				<h:outputLink rendered="#{request.isUserInRole('ADMIN')}"
+					id="adminIcon" value="#"
+					style="margin-left:10px;margin-right:10px;color:red">
+					<i class="fa fa-user" />
+				</h:outputLink>
+				<h:outputLink rendered="#{request.isUserInRole('USER')}"
+					id="userIcon" value="#" style="margin-left:10px;margin-right:10px">
+					<i class="fa fa-user" />
+				</h:outputLink>
+				<span style="font-size: small"> <p:tooltip
+						id="userInfoTooltip" for="userIcon"
+						value="User [#{request.userPrincipal.name}] : Role #{request.userPrincipal.authorities}"
+						position="left" /> <p:tooltip id="adminInfoTooltip"
+						for="adminIcon"
+						value="User [#{request.userPrincipal.name}] : Role #{request.userPrincipal.authorities}"
+						position="left" />
+
 				</span>
 
 			</div>
@@ -83,7 +113,7 @@
 				<h:link outcome="search">
 					<i class="fa fa-search icon-white" aria-hidden="true"> Search</i>
 				</h:link>
-				
+
 				<h:link outcome="trace.html">
 					<i class="fa fa-file-text-o" aria-hidden="true"> Trace</i>
 				</h:link>

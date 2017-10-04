@@ -56,9 +56,9 @@
 						<td><h:outputText rendered="#{param.error}" value="error" /></td>
 					</tr>
 					<tr>
-						<td colspan='2' style="padding-top: 20"><a
+						<td colspan='2' style="padding-top: 20"><h:panelGroup rendered="#{securityConfig.samlEnabled}"><a
 							href="saml/login"
-							style="display: block" class="inst_button">Institution Login</a> <!-- ?idp=https%3A%2F%2Fidp.cardiff.ac.uk%2Fshibboleth -->
+							style="display: block" class="inst_button">Institution Login</a> </h:panelGroup>
 						</td>
 
 					</tr>

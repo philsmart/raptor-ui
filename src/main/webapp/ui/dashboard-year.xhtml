@@ -22,7 +22,26 @@
 			<i class="fa fa-tachometer icon-white" aria-hidden="true" /> YEAR
 		</p>
 
+		<div style="text-align: center">
+			<span
+				style="background: #9a9a9a; padding-bottom: 5px; padding-top: 5px; padding-left: 5px; color: white">
+				Total User Authentications <h:outputText
+					style="background:black;padding:5px"
+					value="#{dashboardScalers.scalers[systemSelection.selected.name()]['AUTHS_YEAR']}">
 
+					<f:convertNumber pattern="###,###,###" />
+				</h:outputText>
+			</span> <span
+				style="background: #9a9a9a; padding-bottom: 5px; padding-top: 5px; padding-left: 5px; color: white">
+				Total Distinct User Authentications <h:outputText
+					style="background:black;padding:5px"
+					value="#{dashboardScalers.scalers[systemSelection.selected.name()]['AUTHS_DISTINCT_YEAR']}">
+
+					<f:convertNumber pattern="###,###,###" />
+
+				</h:outputText>
+			</span>
+		</div>
 
 		<h:panelGrid columns="2" style="text-align:center;width:100%">
 

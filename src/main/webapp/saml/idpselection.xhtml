@@ -43,7 +43,7 @@
 							<h:graphicImage style="display:block;margin-left:auto;margin-right:auto" rendered="#{not empty discoIdpSelection.rememberedIdp}" value="#{metadataHelperService.getMduiLogo(discoIdpSelection.rememberedIdp).orElse('')}" 
 							alt="no-image" width="100px"/>
 						</h:commandLink>
-						<h:outputText value="#{metadataHelperService.getOrgDisplayName(discoIdpSelection.rememberedIdp).orElse('UnknownOrg')}"/>
+						<h:outputText value="#{metadataHelperService.getOrgDisplayName(discoIdpSelection.rememberedIdp).orElse('')}"/>
 						</td>
 					</tr>
 

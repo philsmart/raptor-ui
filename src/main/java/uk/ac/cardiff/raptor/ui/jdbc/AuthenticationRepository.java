@@ -52,6 +52,9 @@ public class AuthenticationRepository {
 	@Value("${raptorui.sql.get.top.service-providers.auths.count}")
 	private String authCount;
 
+	@Value("${raptorui.sql.get.top.service-providers.auths.count.distinct}")
+	private String authCountDistinct;
+
 	@Value("${raptorui.sql.get.previous-auths}")
 	private String previousAuths;
 
@@ -177,6 +180,20 @@ public class AuthenticationRepository {
 	@Transactional(readOnly = true)
 	public Long findAllAuthsToServiceProvider(final String system, final Date from) {
 		final String tableAddedSql = authCount.replace("$tableName", system);
+		log.trace("Query is now [{}]", tableAddedSql);
+		try {
+			final Long count = jdbcTemplate.queryForObject(tableAddedSql, new Object[] { from }, Long.class);
+
+			return count;
+		} catch (final Throwable e) {
+			log.error("Issue getting top serviceproviders by authentications distinct", e);
+			throw e;
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public Long findAllDistinctAuthsToServiceProvider(final String system, final Date from) {
+		final String tableAddedSql = authCountDistinct.replace("$tableName", system);
 		log.trace("Query is now [{}]", tableAddedSql);
 		try {
 			final Long count = jdbcTemplate.queryForObject(tableAddedSql, new Object[] { from }, Long.class);

@@ -17,7 +17,7 @@ import uk.ac.cardiff.raptor.ui.model.SystemSelection.SYSTEM;
 public class DashboardScalers {
 
 	public static enum SCALER_TYPE {
-		AUTHS_TODAY
+		AUTHS_TODAY, AUTHS_YEAR, AUTHS_DISTINCT_TODAY, AUTHS_DISTINCT_YEAR
 	}
 
 	private final Map<String, Map<String, Long>> scalers = new HashMap<String, Map<String, Long>>();

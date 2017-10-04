@@ -88,7 +88,25 @@ public class DashboardService {
 			final Long noAuths = authRepository.findAllAuthsToServiceProvider(tableName, DateUtils.getStartOfToday());
 			log.trace("Has {} count for Date >= {} from {}", noAuths, DateUtils.getStartOfToday(), system);
 
+			final Long noAuthsDistinct = authRepository.findAllDistinctAuthsToServiceProvider(tableName,
+					DateUtils.getStartOfToday());
+			log.trace("Has {} count for Date >= {} from {}", noAuthsDistinct, DateUtils.getStartOfToday(), system);
+
+			final Long noAuthsYear = authRepository.findAllAuthsToServiceProvider(tableName,
+					DateUtils.getStartOfYear());
+			log.trace("Has {} count for Date >= {} from {}", noAuthsYear, DateUtils.getStartOfYear(), system);
+
+			final Long noAuthsYearDistinct = authRepository.findAllDistinctAuthsToServiceProvider(tableName,
+					DateUtils.getStartOfYear());
+			log.trace("Has {} count for Date >= {} from {}", noAuthsYearDistinct, DateUtils.getStartOfYear(), system);
+
 			dashboardScalers.addScaler(DashboardScalers.SCALER_TYPE.AUTHS_TODAY, noAuths, system);
+
+			dashboardScalers.addScaler(DashboardScalers.SCALER_TYPE.AUTHS_YEAR, noAuthsYear, system);
+
+			dashboardScalers.addScaler(DashboardScalers.SCALER_TYPE.AUTHS_DISTINCT_TODAY, noAuthsDistinct, system);
+
+			dashboardScalers.addScaler(DashboardScalers.SCALER_TYPE.AUTHS_DISTINCT_YEAR, noAuthsYearDistinct, system);
 		}
 
 	}

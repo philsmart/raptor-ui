@@ -9,6 +9,7 @@ import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.common.Extensions;
 import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml2.metadata.OrganizationDisplayName;
+import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.samlext.saml2mdui.Logo;
 import org.opensaml.samlext.saml2mdui.UIInfo;
@@ -16,10 +17,20 @@ import org.opensaml.xml.XMLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.saml.metadata.MetadataManager;
 import org.springframework.stereotype.Service;
 
+/**
+ * Provides convience methods for working with the currently configured set of
+ * {@link MetadataProvider}s used for Authentication. Does not work for name
+ * lookup for formatting entityIds for display.
+ * 
+ * @author philsmart
+ *
+ */
 @Service
+@ConditionalOnProperty(name = "saml.enabled", havingValue = "true")
 public class MetadataHelperService {
 
 	private static final Logger log = LoggerFactory.getLogger(MetadataHelperService.class);
