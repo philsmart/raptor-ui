@@ -5,18 +5,15 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-import uk.ac.cardiff.raptor.ui.model.SystemSelection.SYSTEM;
 import uk.ac.cardiff.raptor.ui.model.chart.TableModel;
 
 /**
- * One instance for all users - is fine.
+ * For holding tabular results information
  * 
  * @author philsmart
  *
  */
-@Component
 public class DashboardTables {
 
 	private static final Logger log = LoggerFactory.getLogger(DashboardTables.class);
@@ -35,7 +32,7 @@ public class DashboardTables {
 
 	private final Map<String, Map<String, TableModel>> tables = new HashMap<String, Map<String, TableModel>>();
 
-	public void addTable(final TABLE_TYPE type, final TableModel value, final SYSTEM system) {
+	public void addTable(final TABLE_TYPE type, final TableModel value, final AuthSystem system) {
 		if (tables.containsKey(system.name())) {
 			tables.get(system.name()).put(type.name(), value);
 		} else {

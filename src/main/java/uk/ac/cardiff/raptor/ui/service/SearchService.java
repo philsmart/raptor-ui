@@ -1,5 +1,7 @@
 package uk.ac.cardiff.raptor.ui.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
@@ -10,10 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import uk.ac.cardiff.raptor.ui.jdbc.AuthenticationRepository;
+import uk.ac.cardiff.raptor.ui.model.AuthSystem;
 import uk.ac.cardiff.raptor.ui.model.Search;
 import uk.ac.cardiff.raptor.ui.model.SystemSelection;
 import uk.ac.cardiff.raptor.ui.model.chart.GroupByResults;
 import uk.ac.cardiff.raptor.ui.model.chart.SearchGraph;
+import uk.ac.cardiff.raptor.ui.secure.SecurityContextHelper;
 
 /**
  * Use by all clients, must be threadsafe.
@@ -22,7 +26,6 @@ import uk.ac.cardiff.raptor.ui.model.chart.SearchGraph;
  *
  */
 @Component
-
 public class SearchService {
 
 	private static final Logger log = LoggerFactory.getLogger(SearchService.class);
@@ -45,6 +48,8 @@ public class SearchService {
 		Objects.requireNonNull(chartService);
 	}
 
+	// TODO require a security check here such that the system selection is
+	// authorised for that user, otherwise a POST request could be faked
 	public void search(final SystemSelection system, final Search search, final SearchGraph graph)
 			throws SearchException {
 		log.info("Searching for [{}] [{}]", system, search);
@@ -53,7 +58,7 @@ public class SearchService {
 				.orElseThrow(() -> new SearchException("No system set, one of Shibboleth or Ezproxy expected"));
 		log.trace("Searching using TableName [{}]", tableName);
 
-		final GroupByResults results = selectRunSearch(search, tableName);
+		final GroupByResults results = selectRunSearch(search, tableName, system);
 
 		graph.setChart(chartService.createHorizontalBarModel(results));
 		graph.setTable(tableService.createGroupByTable(results));
@@ -61,25 +66,47 @@ public class SearchService {
 	}
 
 	/**
-	 * Selects which type of search to run based on the
-	 * {@link Search#isSchool()} {@link Search#isUser()}
-	 * {@link Search#isServiceProvider()} booleans being set
+	 * Selects which type of search to run based on the {@link Search#isSchool()}
+	 * {@link Search#isUser()} {@link Search#isServiceProvider()} booleans being set
 	 * 
 	 * @param search
 	 *            the {@link Search} object
 	 * @param tableName
 	 *            the name of the table to query
+	 * @param system
+	 *            the {@link SystemSelection} with knowledge of the selected service
+	 *            IDs and {@link AuthSystem}
 	 * @return a {@link GroupByResults} object with the results of the query
 	 */
-	private GroupByResults selectRunSearch(final Search search, final String tableName) {
-		if (search.isUser()) {
-			return authRepository.findUserAuthenticationsGroupBy(search, tableName);
-		} else if (search.isSchool()) {
-			return authRepository.findSchoolAuthentications(search, tableName);
-		} else if (search.isServiceProvider()) {
-			return authRepository.findServiceProviderAuthentications(search, tableName);
+	private GroupByResults selectRunSearch(final Search search, final String tableName,
+			final SystemSelection selection) {
+
+		// TODO should this authorisation check be here?
+		final List<String> allowedUserServiceIds = SecurityContextHelper
+				.retrieveRaptorUserAuthorisedServiceIds(selection.getSelected());
+
+		if (allowedUserServiceIds.contains(selection.getSelectedServiceId())) {
+
+			final List<String> userServiceIds = new ArrayList<>();
+			userServiceIds.add(selection.getSelectedServiceId());
+
+			if (search.isUser()) {
+				return authRepository.findUserAuthenticationsGroupBy(search, tableName, userServiceIds);
+			} else if (search.isSchool()) {
+				return authRepository.findSchoolAuthentications(search, tableName, userServiceIds);
+			} else if (search.isServiceProvider()) {
+				return authRepository.findServiceProviderAuthentications(search, tableName, userServiceIds);
+			} else {
+				return new GroupByResults();
+			}
 		} else {
-			return new GroupByResults();
+			log.error("User " + SecurityContextHelper.getRaptorUserUsernameOrDefault("uknown")
+					+ " is trying to find serviceId " + selection.getSelectedServiceId() + " for authentication system "
+					+ selection.getSelected() + " for which they are not authorized");
+			throw new UnauthorisedSearchException("User "
+					+ SecurityContextHelper.getRaptorUserUsernameOrDefault("uknown") + " is trying to find serviceId "
+					+ selection.getSelectedServiceId() + " for authentication system " + selection.getSelected()
+					+ " for which they are not authorized");
 		}
 	}
 

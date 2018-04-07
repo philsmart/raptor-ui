@@ -47,7 +47,8 @@
 							name='password' /></td>
 					</tr>
 					<tr>
-						<td style="text-align:center;color:darkred;font-weight:bold"><h:outputText rendered="#{param.error!=null}" value="Login Failed"/></td>
+						<td style="text-align: center; color: darkred; font-weight: bold"><h:outputText
+								rendered="#{param.error!=null}" value="Login Failed" /></td>
 					</tr>
 					<tr>
 						<td colspan='2'><button>LOGIN</button></td>
@@ -56,10 +57,14 @@
 						<td><h:outputText rendered="#{param.error}" value="error" /></td>
 					</tr>
 					<tr>
-						<td colspan='2' style="padding-top: 20"><h:panelGroup rendered="#{securityConfig.samlEnabled}"><a
-							href="saml/login"
-							style="display: block" class="inst_button">Institution Login</a> </h:panelGroup>
-						</td>
+						<td colspan='2' style="padding-top: 20"><h:panelGroup
+								rendered="#{securityConfig.samlEnabled}">
+								<a href="saml/login" style="display: block" class="inst_button">Institution
+									Login</a>
+							</h:panelGroup></td>
+
+					</tr>
+					<tr>
 
 					</tr>
 				</table>
@@ -73,7 +78,16 @@
 
 		</div>
 
-		<div class="center" style="width: 30%"></div>
+		<div class="center" style="width: 30%">
+		<h:panelGroup rendered="#{famousQuotesApiService.enabled}">
+			<h:outputText value="#{famousQuotesApiService.quote}" />
+			<span style="z-index: 50; font-size: 0.9em;"><img
+				src="https://theysaidso.com/branding/theysaidso.png" height="20"
+				width="20" alt="theysaidso.com" /><a href="https://theysaidso.com"
+				title="Powered by quotes from theysaidso.com"
+				style="color: #9fcc25; margin-left: 4px; vertical-align: middle;">theysaidso.com</a></span>
+				</h:panelGroup>
+		</div>
 
 		<div></div>
 

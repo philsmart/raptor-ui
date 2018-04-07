@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright (C) 2010 Cardiff University, Wales <smartp@cf.ac.uk> Licensed 
-	under the Apache License, Version 2.0 (the "License"); you may not use this 
-	file except in compliance with the License. You may obtain a copy of the 
-	License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by 
-	applicable law or agreed to in writing, software distributed under the License 
-	is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-	KIND, either express or implied. See the License for the specific language 
-	governing permissions and limitations under the License. -->
+
 
 <configuration scan="true">
 
@@ -17,21 +10,14 @@
 
 	<property name="LOG_NAME" value="raptor-ui" />
 	
-	<property name="AUDIT_LOG_NAME" value="raptor-ui-audit" />
 
 	<property name="LOG_HOME" value="/var/log/raptor-ui" />
 
-	<conversionRule conversionWord="clr"
-		converterClass="org.springframework.boot.logging.logback.ColorConverter" />
-	<conversionRule conversionWord="wex"
-		converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
-	<conversionRule conversionWord="wEx"
-		converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
-
-		
-	<property name="CONSOLE_LOG_PATTERN" value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %line %clr(---){faint} %clr([%t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
-	<property name="FILE_LOG_PATTERN" value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
-		
+	<property name="CONSOLE_LOG_PATTERN" value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} [%X{req.method}][%X{user}] %clr(---){faint} %clr([%15.15t{14}]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex"/>
+	<property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } [%X{req.method}][%X{user:-system}] [%t] --- %-40.40logger{39} : %m%n%wex"/>
+	
+	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+	<conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
 	
 	
 	<appender name="FILE"
@@ -49,24 +35,11 @@
 		</encoder>
 	</appender>
 	
-	<appender name="AUDIT"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${LOG_HOME}/${AUDIT_LOG_NAME}.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!-- daily rollover -->
-			<fileNamePattern>${AUDIT_LOG_NAME}/${LOG_NAME}.%d{yyyy-MM-dd}.log
-			</fileNamePattern>
-			<!-- keep 30 days' worth of history -->
-			<maxHistory>30</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<pattern>%d|%msg%n</pattern>
-		</encoder>
-	</appender>
+	
 	
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+			<Pattern>${FILE_LOG_PATTERN}</Pattern>
 		</layout>
 	</appender>
 	
@@ -108,17 +81,35 @@
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</logger>
-
-
-	<logger name="uk.ac.cardiff" level="debug" additivity="false">
+	
+	<logger name="org.springframework.security.web.session" level="TRACE" additivity="false">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</logger>
 	
-	<logger name="audit" level="DEBUG" additivity="false">	
-		<appender-ref ref="AUDIT" />
+
+	
+	<logger name="org.springframework.jdbc.core" level="TRACE" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+	
+	<logger name="org.springframework.security.core.session" level="TRACE" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
 	</logger>
 
 
+	<logger name="uk.ac.cardiff" level="DEBUG" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+	
+	<logger name="uk.ac.cardiff.raptor.ui.jdbc" level="TRACE" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+	
+	
 
 </configuration>

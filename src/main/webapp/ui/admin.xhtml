@@ -1,0 +1,207 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="../templates/template.xhtml">
+	<ui:define name="content">
+		<style type="text/css">
+.big-icon {
+	padding: 20px 20px 20px 20px
+}
+</style>
+
+
+		<h:outputText styleClass="admin-text" style="padding-bottom:20px"
+			value="Authentication Service Mappings" />
+
+		<div style="display: block; text-align: center;; margin-bottom: 10px">
+
+
+			<h:form id="searchMappingForm" style="display:inline">
+				<i class="fa fa-search fa-2x" aria-hidden="true"></i>
+				<p:inputText style="top: -5px;position: relative;"/>
+			</h:form>
+
+			<h:form id="addEntityForm" style="display:inline">
+
+
+				<p:commandLink onclick="PF('newSamlEntity').show();">
+					<i class="fa fa-plus-square fa-2x" aria-hidden="true"></i>
+				</p:commandLink>
+
+				<p:dialog header="Add New SAML Entity" widgetVar="newSamlEntity"
+					modal="true" draggable="false" resizable="false" height="100">
+					<table style="width: 400px; text-align: center">
+						<tr>
+							<td style="border: 0px"><h:outputText value="SAML EntityID" /></td>
+						</tr>
+
+
+						<tr>
+							<td style="border: 0px"><h:inputText
+									value="#{adminModel.newSamlId}" style="width:100%" /></td>
+						</tr>
+
+						<tr>
+							<td style="border: 0px"><p:commandButton value="Add"
+									ajax="false"
+									action="#{serviceIDMappingService.saveNewSamlEntityId(adminModel.newSamlId)}"
+									update="adminForm" styleClass="ui-confirmdialog-yes"
+									onclick="PF('newSamlEntity').hide();" /></td>
+						</tr>
+
+
+					</table>
+				</p:dialog>
+			</h:form>
+
+
+
+
+		</div>
+
+		<h:form id="adminForm">
+
+
+
+			<h:outputText value="#{row.samlEntityId}" />
+
+
+
+			<p:accordionPanel style="width:100%" activeIndex="null"
+				multiple="false" var="row"
+				value="#{serviceIDMappingService.mappings}">
+
+				<p:tab>
+
+					<f:facet name="title">
+						<h:outputText value="#{row.samlEntityId}" />
+
+
+
+
+					</f:facet>
+
+					<div class="divTable">
+						<div class="divTableBody">
+							<div class="divTableRow">
+								<div class="divTableCell">
+									<h:commandLink
+										action="#{serviceIDMappingService.removeSamlEntityIdMapping(row)}"
+										update="adminForm">
+										<i class="fa fa-trash-o" aria-hidden="true"> Delete Entire
+											Mapping</i>
+
+									</h:commandLink>
+								</div>
+								<div class="divTableCell">
+									<p:commandLink oncomplete="PF('idAdd').show();"
+										action="#{adminModel.setCurrentMappingRow(row)}">
+										<i class="fa fa-plus-square" aria-hidden="true"> Add
+											service mapping</i>
+
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+
+
+
+					<p:dataList
+						value="#{serviceIDMappingService.getSystemToServiceIdMappingEntryList(row)}"
+						var="system" type="definition">
+
+						<p:panelGrid colummns="2">
+							<h:outputText value="#{msg['auth.system.' += system.key]}" />
+
+
+
+							<p:dataList style="width:80%;display:inline-grid"
+								value="#{system.value}" var="serviceId" type="definition">
+
+
+								<p:outputPanel
+									style="text-align:center;border-bottom:1px DASHED;padding:5px">
+									<h:outputText value="#{serviceId}" />
+									<h:commandLink
+										action="#{serviceIDMappingService.removeMapping(row,system.key,serviceId)}"
+										update="adminForm">
+										<i class="fa fa-trash-o" aria-hidden="true" />
+
+									</h:commandLink>
+								</p:outputPanel>
+
+
+
+							</p:dataList>
+						</p:panelGrid>
+
+					</p:dataList>
+
+				</p:tab>
+
+			</p:accordionPanel>
+
+
+
+		</h:form>
+
+
+
+
+		<p:dialog header="Add Mapping" widgetVar="idAdd" modal="true"
+			draggable="false" resizable="false" height="220">
+			<h:form id="addMappingForm">
+				<table style="width: 400px; text-align: center">
+					<tr>
+						<td style="border: 0px"><h:outputText
+								value="Authentication type" /></td>
+					</tr>
+
+					<tr>
+						<td style="border: 0px"><p:selectOneMenu
+								id="authSystemSelect" value="#{adminModel.newAuthSystem}"
+								style="width:125px">
+								<f:selectItems value="#{authSystemHelper.authSystems}"
+									var="system" itemValue="#{system}"
+									itemLabel="#{msg['auth.system.' += system]}" />
+							</p:selectOneMenu></td>
+					</tr>
+					<tr>
+						<td style="border: 0px"><h:outputText
+								value="Service Identifier" /></td>
+					</tr>
+					<tr>
+
+
+						<td style="border: 0px"><p:autoComplete size="50"
+								id="serviceIdAutocomplete"
+								style="width:100%;text-align:center;-webkit-border-radius: 10px; -moz-border-radius: 10px;border-radius: 10px;margin:20px 0px 20px 0px"
+								minQueryLength="2" value="#{adminModel.newServiceId}"
+								completeMethod="#{autoCompleteServiceProviderService.completeServiceIDs}"
+								effect="fade">
+
+							</p:autoComplete></td>
+					</tr>
+					<tr>
+						<td style="border: 0px"><p:commandButton value="Add"
+								ajax="false"
+								action="#{serviceIDMappingService.addMapping(adminModel.currentMappingRow,adminModel.newAuthSystem,adminModel.newServiceId)}"
+								update="adminForm" styleClass="ui-confirmdialog-yes"
+								onclick="PF('idAdd').hide();" /></td>
+					</tr>
+
+
+				</table>
+			</h:form>
+		</p:dialog>
+
+
+
+	</ui:define>
+</ui:composition>

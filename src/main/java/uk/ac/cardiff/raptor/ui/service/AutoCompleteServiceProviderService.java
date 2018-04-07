@@ -16,10 +16,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import uk.ac.cardiff.raptor.ui.jdbc.UiHelperRepository;
+import uk.ac.cardiff.raptor.ui.model.AuthSystem;
 import uk.ac.cardiff.raptor.ui.model.SystemSelection;
-import uk.ac.cardiff.raptor.ui.model.SystemSelection.SYSTEM;
 
 @Service
+// TODO refactor name, its not just serive providers
 public class AutoCompleteServiceProviderService {
 
 	private static final Logger log = LoggerFactory.getLogger(AutoCompleteServiceProviderService.class);
@@ -33,12 +34,17 @@ public class AutoCompleteServiceProviderService {
 	/**
 	 * List of known ServiceProviders (comes from {@link Event#resourceId}).
 	 */
-	private final Map<SYSTEM, List<String>> serviceProvidersList = new HashMap<SYSTEM, List<String>>();
+	private final Map<AuthSystem, List<String>> serviceProvidersList = new HashMap<>();
 
 	/**
 	 * List of known departments/schools, comes from {@link Event#school}
 	 */
-	private final Map<SYSTEM, List<String>> departmentsList = new HashMap<SYSTEM, List<String>>();
+	private final Map<AuthSystem, List<String>> departmentsList = new HashMap<>();
+
+	/**
+	 * List of know service IDs per authentication system.
+	 */
+	private final Map<AuthSystem, List<String>> serviceIDs = new HashMap<>();
 
 	@PostConstruct
 	public void init() {
@@ -49,12 +55,15 @@ public class AutoCompleteServiceProviderService {
 	public void loadLists() {
 
 		// TODO for loop through all SYSTEM to generate all tables
-		for (final SYSTEM system : SYSTEM.values()) {
+		for (final AuthSystem system : AuthSystem.values()) {
 			final String table = sqlMapper.mapToTableName(system);
 			try {
 				serviceProvidersList.put(system, uiRepo.findAllServiceProviders(table));
 
 				departmentsList.put(system, uiRepo.findAllDepartments(table));
+
+				serviceIDs.put(system, uiRepo.findAllServiceIDs(table));
+
 			} catch (final DataAccessException e) {
 				log.warn("Could not generate autocomplete values for [{}]", table, e);
 			}
@@ -82,6 +91,29 @@ public class AutoCompleteServiceProviderService {
 
 		return departmentsList.get(system.getSelected()).stream().filter(x -> x != null)
 				.filter(x -> x.toLowerCase().contains(queryLower)).collect(Collectors.toList());
+
+	}
+
+	/**
+	 * Auto-complete a service ID for the authentication system {@code system}.
+	 * 
+	 * @param query
+	 *            a complete or partially complete serviceID.
+	 * @return a list of serviceIDs that contain the string {@code query} for the
+	 *         authentication system {@code system}
+	 */
+	public List<String> completeServiceIDs(final String query) {
+
+		final String queryLower = query.toLowerCase();
+
+		final FacesContext context = FacesContext.getCurrentInstance();
+		final String systemString = context.getApplication().evaluateExpressionGet(context, "#{system.key}",
+				String.class);
+
+		final AuthSystem system = AuthSystem.valueOf(systemString);
+
+		return serviceIDs.get(system).stream().filter(x -> x != null).filter(x -> x.toLowerCase().contains(queryLower))
+				.collect(Collectors.toList());
 
 	}
 

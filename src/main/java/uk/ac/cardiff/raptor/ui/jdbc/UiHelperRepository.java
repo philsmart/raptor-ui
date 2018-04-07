@@ -32,6 +32,9 @@ public class UiHelperRepository {
 	@Value("${raptorui.sql.ui.autocomplete.departments}")
 	private String findAllDepartments;
 
+	@Value("${raptorui.sql.ui.autocomplete.serviceIDs}")
+	private String findAllServiceIDs;
+
 	@Inject
 	private JdbcTemplate jdbcTemplate;
 
@@ -39,6 +42,7 @@ public class UiHelperRepository {
 	public void setup() {
 		Objects.requireNonNull(jdbcTemplate);
 		Objects.requireNonNull(findAllServiceProviders);
+		Objects.requireNonNull(findAllServiceIDs);
 	}
 
 	@Transactional(readOnly = true)
@@ -74,6 +78,24 @@ public class UiHelperRepository {
 		log.debug("Has found {} Departments from table {}", allDepartments.size(), system);
 
 		return allDepartments;
+
+	}
+
+	@Transactional(readOnly = true)
+	public List<String> findAllServiceIDs(final String system) {
+
+		final String tableAddedSql = findAllServiceIDs.replace("$tableName", system);
+		log.debug("Query findAllServiceIDs is now [{}]", tableAddedSql);
+
+		final List<String> allServiceIds = jdbcTemplate.queryForList(tableAddedSql, String.class);
+
+		if (allServiceIds == null) {
+			return Collections.emptyList();
+		}
+
+		log.debug("Has found {} serviceIDs", allServiceIds.size());
+
+		return allServiceIds;
 
 	}
 

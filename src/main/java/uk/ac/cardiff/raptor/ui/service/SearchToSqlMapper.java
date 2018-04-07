@@ -8,8 +8,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import uk.ac.cardiff.raptor.ui.model.AuthSystem;
 import uk.ac.cardiff.raptor.ui.model.SystemSelection;
-import uk.ac.cardiff.raptor.ui.model.SystemSelection.SYSTEM;
 
 @Service
 final public class SearchToSqlMapper {
@@ -35,10 +35,10 @@ final public class SearchToSqlMapper {
 	 * @return a string that represents the database tablename that the input
 	 *         {@link SYSTEM} represents.
 	 */
-	public String mapToTableName(final SystemSelection.SYSTEM system) {
-		if (system == SystemSelection.SYSTEM.SHIBBOLETH) {
+	public String mapToTableName(final AuthSystem system) {
+		if (system == AuthSystem.SHIBBOLETH_IDP) {
 			return shibbolethTableName;
-		} else if (system == SystemSelection.SYSTEM.EZPROXY) {
+		} else if (system == AuthSystem.EZPROXY) {
 			return ezproxyTableName;
 		}
 		// can never happen,
@@ -47,12 +47,7 @@ final public class SearchToSqlMapper {
 	}
 
 	public Optional<String> mapToTableName(final SystemSelection system) {
-		if (system.isShibboleth()) {
-			return Optional.of(shibbolethTableName);
-		} else if (system.isEzproxy()) {
-			return Optional.of(ezproxyTableName);
-		}
-		return Optional.empty();
+		return Optional.of(mapToTableName(system.getSelected()));
 
 	}
 

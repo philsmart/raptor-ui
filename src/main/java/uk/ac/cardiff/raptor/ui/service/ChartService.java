@@ -71,7 +71,7 @@ public class ChartService {
 		yAxis.setLabel(results.getSeriesLabel());
 
 		for (final GroupByResult result : results.getResults()) {
-			log.debug("Creating graph from result {}", result);
+			log.trace("Creating graph from result {}", result);
 			series.set(result.getFieldName(), result.getCount());
 		}
 

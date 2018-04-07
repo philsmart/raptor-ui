@@ -7,6 +7,8 @@ public class GroupByResults {
 
 	private String seriesLabel;
 
+	private List<GroupByResult> results;
+
 	/**
 	 * @return the seriesLabel
 	 */
@@ -40,7 +42,5 @@ public class GroupByResults {
 	public void setResults(final List<GroupByResult> results) {
 		this.results = results;
 	}
-
-	private List<GroupByResult> results;
 
 }

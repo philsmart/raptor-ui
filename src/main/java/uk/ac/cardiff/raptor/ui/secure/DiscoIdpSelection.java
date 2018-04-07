@@ -63,7 +63,8 @@ public class DiscoIdpSelection {
 
 		if (selectedIdp != null && selectedIdp.equals("") == false) {
 
-			CookieHelper.setCookie(IDP_COOKIE_NAME, selectedIdp, 10000);
+			// set cookie for 1 week if does not already exist
+			CookieHelper.setCookie(IDP_COOKIE_NAME, selectedIdp, 604800);
 
 			FacesContext.getCurrentInstance().getExternalContext()
 					.redirect("/saml/login?disco=true&" + idpReturnParam + "=" + selectedIdp);

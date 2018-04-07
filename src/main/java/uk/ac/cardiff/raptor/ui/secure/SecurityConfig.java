@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -37,6 +38,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLBootstrap;
 import org.springframework.security.saml.SAMLDiscovery;
@@ -75,11 +78,16 @@ import org.springframework.security.saml.websso.WebSSOProfileConsumerImpl;
 import org.springframework.security.saml.websso.WebSSOProfileECPImpl;
 import org.springframework.security.saml.websso.WebSSOProfileImpl;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 /**
  * Configuration here is taken from ,
@@ -141,6 +149,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
+	 * Session registry, to allow server level access to logged in users
+	 * 
+	 * @return
+	 */
+	@Bean
+	public SessionRegistry sessionRegistry() {
+		return new SessionRegistryImpl();
+	}
+
+	/**
+	 * Maps session information into the spring context
+	 * 
+	 * @return
+	 */
+	@Bean
+	public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
+		return new ServletListenerRegistrationBean<HttpSessionEventPublisher>(new HttpSessionEventPublisher());
+	}
+
+	/**
 	 * Defines the web based security configuration.
 	 * 
 	 * @param http
@@ -152,17 +180,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(final HttpSecurity http) throws Exception {
 
 		/*
-		 * if you want no authentication context to trigger spring down the SAML
-		 * auth route - we do not.
+		 * if you want no authentication context to trigger spring down the SAML auth
+		 * route - we do not.
 		 */
 		// http.httpBasic().authenticationEntryPoint(samlEntryPoint());
 
 		http.csrf().disable();
 
+		http.authorizeRequests().mvcMatchers("/ui/admin.xhtml").hasAnyRole("ADMIN");
+
+		http.addFilterAfter(new UserToMdcFilter(), AnonymousAuthenticationFilter.class);
+
 		http.authorizeRequests().antMatchers("/resources/**").permitAll().antMatchers("/javax.faces.resource/**")
 				.permitAll().antMatchers("/saml/**").permitAll().antMatchers("/**").authenticated().and()
 				.authenticationProvider(new SimpleAuthenticationProvider()).formLogin().loginPage("/index.xhtml")
 				.loginProcessingUrl("/login").permitAll();
+
+		http.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry()).maxSessionsPreventsLogin(false);
 
 		http.logout().logoutSuccessUrl("/");
 	}
@@ -183,6 +217,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		log.info("Are we creating a SAML Authentication Provider [{}]", samlEnabled ? "yes" : "no");
 		if (samlEnabled) {
 			auth.authenticationProvider(samlAuthenticationProvider());
+
 		}
 
 	}
@@ -193,6 +228,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		final SAMLAuthenticationProvider samlAuthenticationProvider = new SAMLAuthenticationProvider();
 		samlAuthenticationProvider.setUserDetails(samlUserDetails);
 		samlAuthenticationProvider.setForcePrincipalAsString(false);
+
 		return samlAuthenticationProvider;
 	}
 
@@ -220,8 +256,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 *            the URL of the metadata
 	 * @param sigAliasName
 	 *            the alias of the signature used to validate the downloaded
-	 *            metadata. This is taken from the keystore used to configure
-	 *            this saml SP.
+	 *            metadata. This is taken from the keystore used to configure this
+	 *            saml SP.
 	 * @param trustChecks
 	 *            if true, performs signature validation.
 	 * @return and {@link ExtendedMetadataDelegate}
@@ -318,8 +354,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * Filter automatically generates default SP metadata. It does this for
-	 * every request?
+	 * Filter automatically generates default SP metadata. It does this for every
+	 * request?
 	 * 
 	 * @return
 	 */
@@ -447,9 +483,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * saml/SSO endpoint, which is what is called from the return from an IdP
-	 * Authn request.It delegates to the configured authentication manager to
-	 * authenticate the SAML response.
+	 * saml/SSO endpoint, which is what is called from the return from an IdP Authn
+	 * request.It delegates to the configured authentication manager to authenticate
+	 * the SAML response.
 	 * 
 	 * @return
 	 * @throws Exception
@@ -461,6 +497,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		samlWebSSOProcessingFilter.setAuthenticationManager(authenticationManager());
 		samlWebSSOProcessingFilter.setAuthenticationSuccessHandler(successRedirectHandler());
 		samlWebSSOProcessingFilter.setAuthenticationFailureHandler(authenticationFailureHandler());
+		/*
+		 * Classes to allow registration of session
+		 */
+		final List<SessionAuthenticationStrategy> delegateStrategies = new ArrayList<>();
+		delegateStrategies.add(new RegisterSessionAuthenticationStrategy(sessionRegistry()));
+		final CompositeSessionAuthenticationStrategy compSession = new CompositeSessionAuthenticationStrategy(
+				delegateStrategies);
+		samlWebSSOProcessingFilter.setSessionAuthenticationStrategy(compSession);
 		return samlWebSSOProcessingFilter;
 	}
 
@@ -526,9 +570,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * Returns the authentication manager currently used by Spring. It
-	 * represents a bean definition with the aim allow wiring from other classes
-	 * performing the Inversion of Control (IoC).
+	 * Returns the authentication manager currently used by Spring. It represents a
+	 * bean definition with the aim allow wiring from other classes performing the
+	 * Inversion of Control (IoC).
 	 * 
 	 * @throws Exception
 	 */

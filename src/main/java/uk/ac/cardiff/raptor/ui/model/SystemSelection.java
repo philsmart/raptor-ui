@@ -12,14 +12,15 @@ public class SystemSelection {
 
 	private static final Logger log = LoggerFactory.getLogger(SystemSelection.class);
 
-	// TODO not used system web yet, just DashboardScaler
-	public enum SYSTEM {
-		SHIBBOLETH,
+	/**
+	 * The value of the currently selected {@link AuthSystem}
+	 */
+	private AuthSystem selectedAuthSystem;
 
-		EZPROXY
-	}
-
-	private SYSTEM selected;
+	/**
+	 * The currently selected serviceId
+	 */
+	private String selectedServiceId;
 
 	/*
 	 * (non-Javadoc)
@@ -28,73 +29,61 @@ public class SystemSelection {
 	 */
 	@Override
 	public String toString() {
-		return "SystemSelection [shibboleth=" + shibboleth + ", ezproxy=" + ezproxy + "]";
+		final StringBuilder builder = new StringBuilder();
+		builder.append("SystemSelection [selectedAuthSystem=");
+		builder.append(selectedAuthSystem);
+		builder.append(", selectedServiceId=");
+		builder.append(selectedServiceId);
+		builder.append("]");
+		return builder.toString();
 	}
 
-	private boolean shibboleth;
+	/**
+	 * Sets the selectedServiceId and the selectedAuthSystem.
+	 * 
+	 * @param authSystem
+	 *            the {@link String} value of the {@link AuthSystem} to set
+	 * @param serviceId
+	 *            the serviceId to set
+	 */
+	public void setSelectedAuthSystem(final String authSystem, final String serviceId) {
+		log.info("Setting selected authentication system to [{}] with serviceId [{}]", authSystem, serviceId);
+		selectedServiceId = serviceId;
+		try {
+			selectedAuthSystem = AuthSystem.valueOf(authSystem);
+		} catch (final IllegalArgumentException e) {
+			log.error("Could not set selected auth system, requested type [{}] does not exist in auth types [{}]",
+					authSystem, AuthSystem.values(), e);
+		}
 
-	private boolean ezproxy;
+	}
 
 	public SystemSelection() {
-		shibboleth = true;
-		selected = SYSTEM.SHIBBOLETH;
-		ezproxy = false;
-	}
 
-	public void toggleShibboleth() {
-		shibboleth = true;
-		selected = SYSTEM.SHIBBOLETH;
-		ezproxy = false;
-	}
+		selectedAuthSystem = AuthSystem.SHIBBOLETH_IDP;
 
-	public void toggleEzproxy() {
-		shibboleth = false;
-		selected = SYSTEM.EZPROXY;
-		ezproxy = true;
-	}
-
-	/**
-	 * @return the shibboleth
-	 */
-	public boolean isShibboleth() {
-		return shibboleth;
-	}
-
-	/**
-	 * @param shibboleth
-	 *            the shibboleth to set
-	 */
-	public void setShibboleth(final boolean shibboleth) {
-		this.shibboleth = shibboleth;
-	}
-
-	/**
-	 * @return the ezproxy
-	 */
-	public boolean isEzproxy() {
-		return ezproxy;
-	}
-
-	/**
-	 * @param ezproxy
-	 *            the ezproxy to set
-	 */
-	public void setEzproxy(final boolean ezproxy) {
-		this.ezproxy = ezproxy;
 	}
 
 	/**
 	 * @return the selected
 	 */
-	public SYSTEM getSelected() {
-		return selected;
+	public AuthSystem getSelected() {
+		return selectedAuthSystem;
 	}
 
 	/**
-	 * @param selected the selected to set
+	 * @param selected
+	 *            the selected to set
 	 */
-	public void setSelected(SYSTEM selected) {
-		this.selected = selected;
+	public void setSelected(final AuthSystem selected) {
+		this.selectedAuthSystem = selected;
+	}
+
+	/**
+	 * @return the selectedServiceId
+	 */
+	public String getSelectedServiceId() {
+		return selectedServiceId;
 	}
 
 }

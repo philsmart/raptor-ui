@@ -6,11 +6,7 @@ import java.util.Map;
 import org.primefaces.model.chart.ChartModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-import uk.ac.cardiff.raptor.ui.model.SystemSelection.SYSTEM;
-
-@Component
 public class DashboardGraphs {
 
 	private static final Logger log = LoggerFactory.getLogger(DashboardGraphs.class);
@@ -31,7 +27,7 @@ public class DashboardGraphs {
 
 	private final Map<String, Map<String, ChartModel>> graphs = new HashMap<String, Map<String, ChartModel>>();
 
-	public void addGraph(final CHART_TYPE type, final ChartModel value, final SYSTEM system) {
+	public void addGraph(final CHART_TYPE type, final ChartModel value, final AuthSystem system) {
 		if (graphs.containsKey(system.name())) {
 			graphs.get(system.name()).put(type.name(), value);
 		} else {

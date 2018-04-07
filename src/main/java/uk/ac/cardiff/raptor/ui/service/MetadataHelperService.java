@@ -2,18 +2,22 @@ package uk.ac.cardiff.raptor.ui.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.common.Extensions;
+import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml2.metadata.OrganizationDisplayName;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
+import org.opensaml.samlext.saml2mdattr.EntityAttributes;
 import org.opensaml.samlext.saml2mdui.Logo;
 import org.opensaml.samlext.saml2mdui.UIInfo;
 import org.opensaml.xml.XMLObject;
+import org.opensaml.xml.schema.impl.XSAnyImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +27,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Provides convience methods for working with the currently configured set of
- * {@link MetadataProvider}s used for Authentication. Does not work for name
+ * {@link MetadataProvider}s used for Authentication. Is not intended for name
  * lookup for formatting entityIds for display.
  * 
  * @author philsmart
@@ -38,6 +42,13 @@ public class MetadataHelperService {
 	public static final String[] SUPPORTED_SAML_SSO_PROTOCOLS = new String[] { SAMLConstants.SAML10P_NS,
 			SAMLConstants.SAML11P_NS, SAMLConstants.SAML20P_NS };
 
+	private final QName ENTITY_ATTRIBUTES = new QName(SAMLConstants.SAML20MDATTR_NS, "EntityAttributes",
+			SAMLConstants.SAML20MDATTR_PREFIX);
+
+	private final String ENTITY_CATEGORY_NAME = "http://macedir.org/entity-category";
+
+	private final String HIDE_FROM_DISCO_VALUE = "http://refeds.org/category/hide-from-discovery";
+
 	@Autowired
 	private MetadataManager metadata;
 
@@ -47,8 +58,7 @@ public class MetadataHelperService {
 	 * 
 	 * @param entityId
 	 *            the identifier of the SAML MetadataDescriptor
-	 * @return and {@link Optional} of type {@link String} of the org name, or
-	 *         null.
+	 * @return and {@link Optional} of type {@link String} of the org name, or null.
 	 */
 	public Optional<String> getOrgDisplayName(final String entityId) {
 		try {
@@ -67,9 +77,71 @@ public class MetadataHelperService {
 	}
 
 	/**
+	 * Determine if the Entity {@code entityId} should be hidden from a discovery
+	 * service.
 	 * 
-	 * Chooses the largest sized (determined by height only) logo from the mdui
-	 * SAML extensions if present, if not, empty Optional is returned.
+	 * @param entityId
+	 *            the identifier of the EntityDescriptor to check
+	 * @return true if the entity exists and is hidden from the discovery service,
+	 *         false otherwise.
+	 */
+	public boolean isHidenFromDiscoveryService(final String entityId) {
+
+		if (entityId == null) {
+			return true;
+		}
+
+		try {
+			final EntityDescriptor entity = metadata.getEntityDescriptor(entityId);
+
+			final List<XMLObject> extObjs = entity.getExtensions().getUnknownXMLObjects(ENTITY_ATTRIBUTES);
+
+			if (extObjs == null) {
+				return false;
+			}
+
+			for (final XMLObject entityAttributesObj : extObjs) {
+
+				if (entityAttributesObj instanceof EntityAttributes) {
+					final EntityAttributes entityAttributes = (EntityAttributes) entityAttributesObj;
+
+					final List<Attribute> attributes = entityAttributes.getAttributes();
+
+					final List<Attribute> entityCats = attributes.stream()
+							.filter(attr -> attr.getNameFormat().equals(Attribute.URI_REFERENCE)
+									&& attr.getName().equals(ENTITY_CATEGORY_NAME))
+							.collect(Collectors.toList());
+
+					if (entityCats.size() > 0) {
+						for (final Attribute entityCat : entityCats) {
+							for (final XMLObject valueObj : entityCat.getAttributeValues()) {
+								if (valueObj instanceof XSAnyImpl) {
+									final XSAnyImpl xsImpl = (XSAnyImpl) valueObj;
+									if (xsImpl.getTextContent() != null
+											&& xsImpl.getTextContent().equals(HIDE_FROM_DISCO_VALUE)) {
+										return true;
+									}
+
+								}
+
+							}
+						}
+					}
+				}
+
+			}
+
+		} catch (final MetadataProviderException e) {
+			// do nothing, just return false below.
+		}
+
+		return false;
+	}
+
+	/**
+	 * 
+	 * Chooses the largest sized (determined by height only) logo from the mdui SAML
+	 * extensions if present, if not, empty Optional is returned.
 	 * 
 	 * @param entityId
 	 *            the identifier of the Entity to lookup
@@ -87,8 +159,7 @@ public class MetadataHelperService {
 
 		/*
 		 * even though a loop here, there should only be one-of these protocols
-		 * supported per entity, so only every one will give reference to
-		 * extensions.
+		 * supported per entity, so only ever one will give reference to extensions.
 		 */
 		for (final String ssoProtocol : SUPPORTED_SAML_SSO_PROTOCOLS) {
 			if (entity.getIDPSSODescriptor(ssoProtocol) != null) {
@@ -111,7 +182,7 @@ public class MetadataHelperService {
 					final List<Logo> logos = info.getLogos();
 
 					for (final Logo logo : logos) {
-						log.trace("Logo URL found {}", logo.getURL());
+
 						if (chosenLogo == null) {
 							chosenLogo = logo;
 						} else if (chosenLogo.getHeight() < logo.getHeight()) {

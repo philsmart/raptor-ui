@@ -15,7 +15,6 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml.metadata.MetadataManager;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -40,25 +39,58 @@ public class SSOController {
 	@Autowired
 	private AutoCompleteIdpSelection discoSelection;
 
+	private final String LANDING_PAGE = "/ui/search.xhtml";
+
+	/**
+	 * <p>
+	 * Controller for the route {@code /idpSelection}, that places
+	 * {@link IdpDiscoSelectionTriple} triples - taken from the list of non DISCO
+	 * hidden IdentityProviders from {@link MetadataManager#getIDPEntityNames()} -
+	 * into the {@link AutoCompleteIdpSelection} service class for use by the
+	 * {@code /saml/idpselection.xhtml} view. The view which is returned depends on
+	 * the context of the request.
+	 * </p>
+	 * 
+	 * <p>
+	 * If the client/user of the request already has an authentication context, the
+	 * result is the {@code LANDING_PAGE} view.
+	 * </p>
+	 * 
+	 * <p>
+	 * If the client/user does not have an authentication context, and the page has
+	 * been forwarded to, the {@code /saml/idpselection.xhtml} selection page to be
+	 * rendered. Direct access to this controller without an authentication context
+	 * will result in a {@code redirect:/} being returned.
+	 * </p>
+	 * 
+	 * @param request
+	 *            the {@link HttpServletRequest}
+	 * @return
+	 */
 	@RequestMapping(value = "/idpSelection", method = RequestMethod.GET)
-	public String idpSelection(final HttpServletRequest request, final Model model) {
+	public String idpSelection(final HttpServletRequest request) {
 
 		if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
 			log.warn("The current user is already logged in, directing to search page.");
-			return "/ui/search.xhtml";
+			return LANDING_PAGE;
 		} else {
 			if (isForwarded(request)) {
 				final Set<String> idps = metadata.getIDPEntityNames();
 				final List<IdpDiscoSelectionTriple> idpsAndLogos = new ArrayList<>();
 				for (final String idp : idps) {
-					log.trace("Configured Identity Provider for SSO: " + idp);
-					try {
-						final String logoUrl = metaHelperService.getMduiLogo(idp).orElse("none");
-						final String orgName = metaHelperService.getOrgDisplayName(idp).orElse(idp);
 
-						idpsAndLogos.add(new IdpDiscoSelectionTriple(logoUrl, orgName, idp));
-					} catch (final MetadataProviderException e) {
-						log.warn("Could not lookup logo for entity " + idp);
+					final boolean hideFromDisco = metaHelperService.isHidenFromDiscoveryService(idp);
+
+					if (hideFromDisco == false) {
+						log.trace("Configured Identity Provider for SSO: [{}] ", idp);
+						try {
+							final String logoUrl = metaHelperService.getMduiLogo(idp).orElse("none");
+							final String orgName = metaHelperService.getOrgDisplayName(idp).orElse(idp);
+
+							idpsAndLogos.add(new IdpDiscoSelectionTriple(logoUrl, orgName, idp));
+						} catch (final MetadataProviderException e) {
+							log.warn("Could not lookup logo for entity " + idp);
+						}
 					}
 				}
 

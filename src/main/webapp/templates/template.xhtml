@@ -34,38 +34,16 @@
 					style="text-align: center; display: inline; margin-left: -200px">
 
 
-					<!-- <h:graphicImage rendered="#{systemSelection.isShibboleth()}"
-						style="height:30px; vertical-align:middle;margin-top:-5px; border-bottom:4px SOLID"
-						value="../resources/images/shibboleth.png" alt="shib" />
+					
 
-
-					<h:commandLink action="#{systemSelection.toggleShibboleth()}">
-						<h:graphicImage
-							rendered="#{systemSelection.isShibboleth()==false}"
-							style="height:30px; vertical-align:middle;margin-top:-5px"
-							value="../resources/images/shibboleth.png" alt="shib" />
-					</h:commandLink>
-
-					<h:graphicImage rendered="#{systemSelection.isEzproxy()}"
-						style="margin-left:20px;height:25px; vertical-align:middle;margin-top:-5px; border-bottom:4px SOLID"
-						value="../resources/images/ezproxy.png" alt="ezproxy" />
-
-					<h:commandLink action="#{systemSelection.toggleEzproxy()}">
-						<h:graphicImage action="#{systemSelection.toggleShibboleth()}"
-							rendered="#{systemSelection.isEzproxy()==false}"
-							style="margin-left:20px;height:25px; vertical-align:middle;margin-top:-5px"
-							value="../resources/images/ezproxy.png" alt="ezproxy" />
-					</h:commandLink> -->
-
-					<p:commandButton id="systemButton" value="#{systemSelection.selected}" type="button" style="background:grey;color:white;top:-5px"
+					<p:commandButton id="systemButton" value="#{msg['auth.system.' += systemSelection.selected]}" type="button" style="background:grey;color:white;top:-5px"
 						icon="fa fa-bars" />
 					<p:menu overlay="true" trigger="systemButton" my="left top"  
-						at="left bottom">
-					
-							<p:menuitem value="Shibboleth" actionListener="#{menuView.save}"
-								 icon="fa fa-dot-circle-o"  />
-							<p:menuitem value="Ezproxy" actionListener="#{menuView.update}"
-								 icon="fa fa-dot-circle-o" />
+						at="left bottom" model="#{dynamicMenuModel.model}">
+						
+						
+								 
+						
 						
 					</p:menu>
 
@@ -124,12 +102,15 @@
 				</h:link>
 
 				<h:link outcome="dashboard-year.html">
-					<i class="fa fa-tachometer icon-white" aria-hidden="true"> Last
+					<i class="fa fa-tachometer icon-white" aria-hidden="true"> This
 						Year</i>
 				</h:link>
 			</h:form>
 
-			<h:form style="display:inline;float:right">
+			<h:form style="display:inline;float:right" >
+				<h:link outcome="admin" rendered="#{request.isUserInRole('ROLE_ADMIN')}">
+					<i class="fa fa-sliders icon-white" aria-hidden="true"> admin</i>
+				</h:link>
 				<a href="/logout"><i class="fa fa-sign-out" /></a>
 
 			</h:form>

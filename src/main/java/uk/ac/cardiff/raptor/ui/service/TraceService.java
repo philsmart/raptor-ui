@@ -1,5 +1,7 @@
 package uk.ac.cardiff.raptor.ui.service;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -10,6 +12,7 @@ import uk.ac.cardiff.raptor.ui.jdbc.AuthenticationRepository;
 import uk.ac.cardiff.raptor.ui.model.SystemSelection;
 import uk.ac.cardiff.raptor.ui.model.Trace;
 import uk.ac.cardiff.raptor.ui.model.chart.TraceRows;
+import uk.ac.cardiff.raptor.ui.secure.SecurityContextHelper;
 
 /**
  * Service that invokes functions to trace individual user authentications
@@ -34,11 +37,14 @@ public class TraceService {
 	public void trace(final SystemSelection system, final Trace trace) throws SearchException {
 		log.info("Tracing user account [{}]", trace.getSearch());
 
+		final List<String> userServiceIds = SecurityContextHelper
+				.retrieveRaptorUserAuthorisedServiceIds(system.getSelected());
+
 		final String tableName = sqlMapper.mapToTableName(system)
 				.orElseThrow(() -> new SearchException("No system set, one of Shibboleth or Ezproxy expected"));
 		log.debug("Tracing using TableName [{}]", tableName);
 
-		final TraceRows rows = authRepository.findLastAuths(trace, tableName);
+		final TraceRows rows = authRepository.findLastAuths(trace, tableName, userServiceIds);
 		log.debug("Trace has found {} rows for search {}", rows.getRows().size(), trace.getSearch());
 
 		trace.setSearchResult(rows);

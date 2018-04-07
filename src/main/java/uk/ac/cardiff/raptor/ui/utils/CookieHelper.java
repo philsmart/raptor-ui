@@ -19,7 +19,7 @@ public class CookieHelper {
 	 * @param value
 	 *            the value to add to the cookie
 	 * @param age
-	 *            how long the cookie is valid for
+	 *            how long the cookie is valid for in seconds.
 	 */
 	public static void setCookie(final String cookieName, final String value, final int age) {
 		final FacesContext facesContext = FacesContext.getCurrentInstance();
