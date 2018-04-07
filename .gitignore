@@ -1,3 +1,4 @@
+.DS_Store
 /target/
 /serviceid-authz-map.json/
 /serviceid-authz-map.db
