@@ -1,5 +1,6 @@
 package uk.ac.cardiff.raptor.ui.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -37,8 +38,10 @@ public class TraceService {
 	public void trace(final SystemSelection system, final Trace trace) throws SearchException {
 		log.info("Tracing user account [{}]", trace.getSearch());
 
-		final List<String> userServiceIds = SecurityContextHelper
-				.retrieveRaptorUserAuthorisedServiceIds(system.getSelected());
+		final List<String> userServiceIds = new ArrayList<>();
+		userServiceIds.add(system.getSelectedServiceId());
+
+		SecurityContextHelper.checkUserRights(userServiceIds, system.getSelected().name());
 
 		final String tableName = sqlMapper.mapToTableName(system)
 				.orElseThrow(() -> new SearchException("No system set, one of Shibboleth or Ezproxy expected"));

@@ -57,7 +57,8 @@ public class ServiceIDAuthZMapping {
 	 * @param serviceId
 	 *            the serviceId to add to the System for the samlEntityID
 	 */
-	public ServiceIDAuthZMapping(final String samlEntityID, final AuthSystem System, final String serviceId) {
+	public ServiceIDAuthZMapping(@Nonnull final String samlEntityID, @Nonnull final AuthSystem System,
+			@Nonnull final String serviceId) {
 		super();
 		this.samlEntityId = samlEntityID;
 		final Map<String, List<String>> mapping = new HashMap<>();
@@ -101,6 +102,7 @@ public class ServiceIDAuthZMapping {
 	/**
 	 * @return the systemToServiceIdMapping
 	 */
+	@Nonnull
 	public Map<String, List<String>> getSystemToServiceIdMapping() {
 		return systemToServiceIdMapping;
 	}

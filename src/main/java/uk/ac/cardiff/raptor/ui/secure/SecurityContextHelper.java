@@ -9,9 +9,11 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import uk.ac.cardiff.raptor.ui.model.AuthSystem;
+import uk.ac.cardiff.raptor.ui.service.UnauthorisedSearchException;
 
 public class SecurityContextHelper {
 
@@ -37,6 +39,42 @@ public class SecurityContextHelper {
 		return Optional.empty();
 	}
 
+	/**
+	 * <p>
+	 * Checks the user associated with the current thread of execution - found from
+	 * the {@link SecurityContext} - is authorised for all the requested
+	 * {@code serviceIds}
+	 * </p>
+	 * 
+	 * <p>
+	 * Will throw an {@link UnauthorisedSearchException} if the user does not have
+	 * rights to *all* the input {@code serviceIds}.
+	 * </p>
+	 * 
+	 * @param serviceIds
+	 * @param system
+	 */
+	public static void checkUserRights(final List<String> serviceIds, final String system) {
+
+		final List<String> allowedUserServiceIds = SecurityContextHelper.retrieveRaptorUserAuthorisedServiceIds(system);
+
+		for (final String serviceId : serviceIds) {
+
+			// any one that is not allowed throws the error
+			if (allowedUserServiceIds.contains(serviceId) == false) {
+
+				log.error("User " + SecurityContextHelper.getRaptorUserUsernameOrDefault("uknown")
+						+ " is trying to find serviceId " + serviceId + " for authentication system " + system
+						+ " for which they are not authorized");
+				throw new UnauthorisedSearchException(
+						"User " + SecurityContextHelper.getRaptorUserUsernameOrDefault("uknown")
+								+ " is trying to find serviceId " + serviceId + " for authentication system " + system
+								+ " for which they are not authorized");
+			}
+		}
+
+	}
+
 	@Nonnull
 	public static List<String> retrieveRaptorUserAuthorisedServiceIds(final AuthSystem system) {
 		final Optional<RaptorUser> user = retrieveRaptorUser();
@@ -45,6 +83,17 @@ public class SecurityContextHelper {
 			return Collections.emptyList();
 		} else {
 			return user.get().getServiceIdMappings().getSystemToServiceIdMapping().get(system.name());
+		}
+	}
+
+	@Nonnull
+	public static List<String> retrieveRaptorUserAuthorisedServiceIds(final String system) {
+		final Optional<RaptorUser> user = retrieveRaptorUser();
+
+		if (user.isPresent() == false) {
+			return Collections.emptyList();
+		} else {
+			return user.get().getServiceIdMappings().getSystemToServiceIdMapping().get(system);
 		}
 	}
 

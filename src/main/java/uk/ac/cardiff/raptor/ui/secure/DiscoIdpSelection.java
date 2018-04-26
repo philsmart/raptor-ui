@@ -39,7 +39,8 @@ public class DiscoIdpSelection {
 
 		if (cookie instanceof Cookie) {
 			log.debug("Has found cookie [{}], {}", IDP_COOKIE_NAME, ((Cookie) cookie).getValue());
-			setRememberedIdp(((Cookie) cookie).getValue());
+			final String decodedIdp = CookieHelper.decode6Base64EncodedCookie(((Cookie) cookie).getValue());
+			setRememberedIdp(decodedIdp);
 		}
 
 	}
@@ -50,8 +51,8 @@ public class DiscoIdpSelection {
 	}
 
 	/**
-	 * Performs a redirect to /saml/login?disco=true&idp=<selectedIdp> when
-	 * called. Also sets a cookie remembering which IdP was last selected.
+	 * Performs a redirect to /saml/login?disco=true&idp=<selectedIdp> when called.
+	 * Also sets a cookie remembering which IdP was last selected.
 	 * 
 	 * @throws IOException
 	 */

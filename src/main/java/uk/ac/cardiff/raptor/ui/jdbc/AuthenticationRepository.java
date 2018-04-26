@@ -67,6 +67,9 @@ public class AuthenticationRepository {
 	@Inject
 	private NamedParameterJdbcTemplate jdbcTemplate;
 
+	/**
+	 * @PostConstruct, check all required SQL has been injected, log SQL.
+	 */
 	@PostConstruct
 	public void setup() {
 		Objects.requireNonNull(jdbcTemplate);

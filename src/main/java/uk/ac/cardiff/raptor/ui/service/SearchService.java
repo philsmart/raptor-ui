@@ -67,12 +67,26 @@ public class SearchService {
 
 	/**
 	 * Selects which type of search to run based on the {@link Search#isSchool()}
-	 * {@link Search#isUser()} {@link Search#isServiceProvider()} booleans being set
+	 * {@link Search#isUser()} {@link Search#isServiceProvider()} booleans being
+	 * set.
+	 * 
+	 * <p>
+	 * The relevant search method is then called. These are:
+	 * <ul>
+	 * <li>{@link AuthenticationRepository#findUserAuthenticationsGroupBy} iff
+	 * {@link Search#isUser()}</li>
+	 * <li>{@link AuthenticationRepository#findServiceProviderAuthentications} iff
+	 * {@link Search#isServiceProvider()}</li>
+	 * <li>{@link AuthenticationRepository#findSchoolAuthentications} iff
+	 * {@link Search#isSchool()}</li>
+	 * </ul>
+	 * .
+	 * </p>
 	 * 
 	 * @param search
 	 *            the {@link Search} object
 	 * @param tableName
-	 *            the name of the table to query
+	 *            the name of the authentication table to query
 	 * @param system
 	 *            the {@link SystemSelection} with knowledge of the selected service
 	 *            IDs and {@link AuthSystem}
@@ -81,33 +95,21 @@ public class SearchService {
 	private GroupByResults selectRunSearch(final Search search, final String tableName,
 			final SystemSelection selection) {
 
-		// TODO should this authorisation check be here?
-		final List<String> allowedUserServiceIds = SecurityContextHelper
-				.retrieveRaptorUserAuthorisedServiceIds(selection.getSelected());
+		final List<String> userServiceIds = new ArrayList<>();
+		userServiceIds.add(selection.getSelectedServiceId());
 
-		if (allowedUserServiceIds.contains(selection.getSelectedServiceId())) {
+		SecurityContextHelper.checkUserRights(userServiceIds, selection.getSelected().name());
 
-			final List<String> userServiceIds = new ArrayList<>();
-			userServiceIds.add(selection.getSelectedServiceId());
-
-			if (search.isUser()) {
-				return authRepository.findUserAuthenticationsGroupBy(search, tableName, userServiceIds);
-			} else if (search.isSchool()) {
-				return authRepository.findSchoolAuthentications(search, tableName, userServiceIds);
-			} else if (search.isServiceProvider()) {
-				return authRepository.findServiceProviderAuthentications(search, tableName, userServiceIds);
-			} else {
-				return new GroupByResults();
-			}
+		if (search.isUser()) {
+			return authRepository.findUserAuthenticationsGroupBy(search, tableName, userServiceIds);
+		} else if (search.isSchool()) {
+			return authRepository.findSchoolAuthentications(search, tableName, userServiceIds);
+		} else if (search.isServiceProvider()) {
+			return authRepository.findServiceProviderAuthentications(search, tableName, userServiceIds);
 		} else {
-			log.error("User " + SecurityContextHelper.getRaptorUserUsernameOrDefault("uknown")
-					+ " is trying to find serviceId " + selection.getSelectedServiceId() + " for authentication system "
-					+ selection.getSelected() + " for which they are not authorized");
-			throw new UnauthorisedSearchException("User "
-					+ SecurityContextHelper.getRaptorUserUsernameOrDefault("uknown") + " is trying to find serviceId "
-					+ selection.getSelectedServiceId() + " for authentication system " + selection.getSelected()
-					+ " for which they are not authorized");
+			return new GroupByResults();
 		}
+
 	}
 
 }

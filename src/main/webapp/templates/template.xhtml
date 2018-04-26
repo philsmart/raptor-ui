@@ -10,16 +10,22 @@
 
 <f:view contentType="text/html" id="fview">
 
+	
 	<script src="https://use.fontawesome.com/595d117f8e.js" />
 
 	<h:head>
 		<h:outputStylesheet name="raptor-style.css" library="css" />
 		<title>Raptor UI</title>
 
+		
 	</h:head>
+
+	
 
 
 	<h:body>
+
+	
 
 
 
@@ -34,21 +40,20 @@
 					style="text-align: center; display: inline; margin-left: -200px">
 
 
-					
 
-					<p:commandButton id="systemButton" value="#{msg['auth.system.' += systemSelection.selected]}" type="button" style="background:grey;color:white;top:-5px"
+
+					<p:commandButton id="systemButton"
+						value="#{msg['auth.system.' += systemSelection.selected]}"
+						type="button" style="background:grey;color:white;top:-5px"
 						icon="fa fa-bars" />
-					<p:menu overlay="true" trigger="systemButton" my="left top"  
+					<p:menu overlay="true" trigger="systemButton" my="left top"
 						at="left bottom" model="#{dynamicMenuModel.model}">
-						
-						
-								 
-						
-						
+
+
 					</p:menu>
 
 
-					
+
 
 
 				</div>
@@ -107,8 +112,9 @@
 				</h:link>
 			</h:form>
 
-			<h:form style="display:inline;float:right" >
-				<h:link outcome="admin" rendered="#{request.isUserInRole('ROLE_ADMIN')}">
+			<h:form style="display:inline;float:right">
+				<h:link outcome="admin"
+					rendered="#{request.isUserInRole('ROLE_ADMIN')}">
 					<i class="fa fa-sliders icon-white" aria-hidden="true"> admin</i>
 				</h:link>
 				<a href="/logout"><i class="fa fa-sign-out" /></a>

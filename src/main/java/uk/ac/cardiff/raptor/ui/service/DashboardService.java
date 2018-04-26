@@ -1,6 +1,8 @@
 package uk.ac.cardiff.raptor.ui.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
@@ -15,6 +17,7 @@ import uk.ac.cardiff.raptor.ui.model.AuthSystem;
 import uk.ac.cardiff.raptor.ui.model.Dashboard;
 import uk.ac.cardiff.raptor.ui.model.DashboardGraphs.CHART_TYPE;
 import uk.ac.cardiff.raptor.ui.model.DashboardTables.TABLE_TYPE;
+import uk.ac.cardiff.raptor.ui.model.account.ServiceIDAuthZMapping;
 import uk.ac.cardiff.raptor.ui.model.chart.GroupByResults;
 import uk.ac.cardiff.raptor.ui.secure.RaptorUser;
 import uk.ac.cardiff.raptor.ui.secure.SecurityContextHelper;
@@ -52,6 +55,12 @@ public class DashboardService {
 	private SessionRegistry sessionRegistry;
 
 	/**
+	 * Where dashboards are stored per user. {@link ConcurrentHashMap} Allow many
+	 * reads, but tries to prevent contention on rights.
+	 */
+	private final Map<String, Dashboard> dashIndex = new ConcurrentHashMap<String, Dashboard>();
+
+	/**
 	 * <p>
 	 * Constructs dashboard graphs for all logged in users
 	 * </p>
@@ -66,58 +75,63 @@ public class DashboardService {
 						"Constructing all dashboard graphs for logged in user [{}], logged in from SAML IdP entityID [{}]",
 						((RaptorUser) principal).getUsername(), ((RaptorUser) principal).getIdpEntityId());
 
-				// final List<String> serviceIds = Arrays
-				// .asList(((RaptorUser) principal).getServiceIdMappings().getServiceIds());
-				//
-				// try {
-				// createTopGraphs(serviceIds);
-				// } catch (final DashboardException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
+				final RaptorUser user = (RaptorUser) principal;
+				final ServiceIDAuthZMapping mappingsForUser = user.getServiceIdMappings();
+
+				for (final Map.Entry<String, List<String>> mapping : mappingsForUser.getSystemToServiceIdMapping()
+						.entrySet()) {
+
+					try {
+						final Dashboard userDash = new Dashboard();
+						final AuthSystem system = AuthSystem.valueOf(mapping.getKey());
+						createTopGraphs(userDash, system, mapping.getValue());
+
+						dashIndex.put(user.getUsername(), userDash);
+
+					} catch (IllegalArgumentException | NullPointerException | DashboardException e) {
+						log.error("Error creating graphs for user [{}]", user.getUsername(), e);
+					}
+
+				}
+
 			}
 		}
 	}
 
-	public Dashboard createTopGraphs(final List<String> userServiceIds) throws DashboardException {
-
-		final Dashboard userDash = new Dashboard();
+	public void createTopGraphs(final Dashboard userDash, final AuthSystem system, final List<String> userServiceIds)
+			throws DashboardException {
 
 		log.info("Running CREATE TOP graphs for serviceIds [{}]", userServiceIds);
 
-		for (final AuthSystem system : AuthSystem.values()) {
+		final String tableName = sqlMapper.mapToTableName(system);
 
-			final String tableName = sqlMapper.mapToTableName(system);
+		log.trace("Searching using TableName [{}]", tableName);
 
-			log.trace("Searching using TableName [{}]", tableName);
+		final GroupByResults topAuthsYear = authRepository
+				.findTopServiceProvidersByAuthentications(DateUtils.getStartOfYear(), tableName, userServiceIds);
 
-			final GroupByResults topAuthsYear = authRepository
-					.findTopServiceProvidersByAuthentications(DateUtils.getStartOfYear(), tableName, userServiceIds);
+		final GroupByResults topAuthsDistinct = authRepository.findTopServiceProvidersByAuthenticationsDistinctUsers(
+				DateUtils.getStartOfYear(), tableName, userServiceIds);
 
-			final GroupByResults topAuthsDistinct = authRepository
-					.findTopServiceProvidersByAuthenticationsDistinctUsers(DateUtils.getStartOfYear(), tableName,
-							userServiceIds);
+		final GroupByResults authsPerMonthYear = authRepository
+				.findAuthsToAllServiceProvidersByPeriod(DateUtils.getStartOfYear(), tableName, "week", userServiceIds);
 
-			final GroupByResults authsPerMonthYear = authRepository.findAuthsToAllServiceProvidersByPeriod(
-					DateUtils.getStartOfYear(), tableName, "week", userServiceIds);
+		userDash.getGraphs().addGraph(CHART_TYPE.TOP5_YEAR, chartService.createPieModel(topAuthsYear, 250, false),
+				system);
 
-			userDash.getGraphs().addGraph(CHART_TYPE.TOP5_YEAR, chartService.createPieModel(topAuthsYear, 250, false),
-					system);
+		userDash.getTables().addTable(TABLE_TYPE.TOP5_YEAR, tableService.createGroupByTable(topAuthsYear), system);
 
-			userDash.getTables().addTable(TABLE_TYPE.TOP5_YEAR, tableService.createGroupByTable(topAuthsYear), system);
+		userDash.getGraphs().addGraph(CHART_TYPE.TOP5DISTINCT_YEAR,
+				chartService.createPieModel(topAuthsDistinct, 250, false), system);
 
-			userDash.getGraphs().addGraph(CHART_TYPE.TOP5DISTINCT_YEAR,
-					chartService.createPieModel(topAuthsDistinct, 250, false), system);
+		userDash.getTables().addTable(TABLE_TYPE.TOP5DISTINCT_YEAR, tableService.createGroupByTable(topAuthsDistinct),
+				system);
 
-			userDash.getTables().addTable(TABLE_TYPE.TOP5DISTINCT_YEAR,
-					tableService.createGroupByTable(topAuthsDistinct), system);
+		userDash.getGraphs().addGraph(CHART_TYPE.AUTHSPER_YEAR, chartService.createLineModel(authsPerMonthYear),
+				system);
 
-			userDash.getGraphs().addGraph(CHART_TYPE.AUTHSPER_YEAR, chartService.createLineModel(authsPerMonthYear),
-					system);
-
-		}
 		log.debug("Finished creating TOP graphs for serviceIds [{}]", userServiceIds);
-		return userDash;
+
 	}
 
 	public void createAuthsCount() throws DashboardException {
@@ -195,6 +209,13 @@ public class DashboardService {
 			// dashboardGraphs.addGraph(CHART_TYPE.AUTHSPER_TODAY,
 			// chartService.createLineModel(authsPerHourDay), system);
 		}
+	}
+
+	/**
+	 * @return the dashIndex
+	 */
+	public Map<String, Dashboard> getDashIndex() {
+		return dashIndex;
 	}
 
 }

@@ -1,10 +1,20 @@
 package uk.ac.cardiff.raptor.ui.model;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.cardiff.raptor.ui.model.account.ServiceIDAuthZMapping;
+import uk.ac.cardiff.raptor.ui.secure.RaptorUser;
+import uk.ac.cardiff.raptor.ui.secure.SecurityContextHelper;
+import uk.ac.cardiff.raptor.ui.utils.JsfBeanHelper;
 
 @ManagedBean
 @SessionScoped
@@ -21,6 +31,25 @@ public class SystemSelection {
 	 * The currently selected serviceId
 	 */
 	private String selectedServiceId;
+
+	// Session scoped, so will have a valid user before this bean is constructed
+	public SystemSelection() {
+		selectedAuthSystem = AuthSystem.SHIBBOLETH_IDP;
+		final Optional<RaptorUser> user = SecurityContextHelper.retrieveRaptorUser();
+		if (user.isPresent()) {
+			final ServiceIDAuthZMapping mappings = user.get().getServiceIdMappings();
+			for (final Map.Entry<String, List<String>> mapping : mappings.getSystemToServiceIdMapping().entrySet()) {
+				if (mapping.getValue().contains(user.get().getIdpEntityId())) {
+					// assume they are allowed to see it, and it will match with the menu displayed
+					// on the page
+					selectedServiceId = user.get().getIdpEntityId();
+				}
+
+			}
+
+		}
+
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -39,7 +68,10 @@ public class SystemSelection {
 	}
 
 	/**
-	 * Sets the selectedServiceId and the selectedAuthSystem.
+	 * Sets the selectedServiceId and the selectedAuthSystem. Re-constructs the
+	 * dynamic menu modal instance for this request by calling
+	 * {@link DynamicMenuModel#createMenuModel()} method on the bean obtained from
+	 * the {@link FacesContext}
 	 * 
 	 * @param authSystem
 	 *            the {@link String} value of the {@link AuthSystem} to set
@@ -55,12 +87,10 @@ public class SystemSelection {
 			log.error("Could not set selected auth system, requested type [{}] does not exist in auth types [{}]",
 					authSystem, AuthSystem.values(), e);
 		}
-
-	}
-
-	public SystemSelection() {
-
-		selectedAuthSystem = AuthSystem.SHIBBOLETH_IDP;
+		// now update the menu modal. TODO maybe not the best place for this, but makes
+		// it work for whichever view calls this method.
+		final DynamicMenuModel selectedSystem = JsfBeanHelper.findBean("dynamicMenuModel");
+		selectedSystem.createMenuModel();
 
 	}
 

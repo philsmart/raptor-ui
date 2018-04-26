@@ -21,6 +21,19 @@ html, body {
 	color: white
 }
 
+.ui-menuitem-link{
+	width: 95% !important;
+}
+ul.ui-menu-child {
+    width: auto !important;
+  
+}
+
+
+
+.ui-menu {
+    min-width: 350px;
+}
 /*
 * DIV table ------
 */
