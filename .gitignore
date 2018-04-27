@@ -5,3 +5,5 @@
 /target/
 /serviceid-authz-map.json/
 /serviceid-authz-map.db
+/bin/
+/.factorypath
